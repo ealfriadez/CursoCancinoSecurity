@@ -21,6 +21,7 @@ public class Seguridad {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 	
+	@Bean
 	BCryptPasswordEncoder passwordEncoder() {
 		
 		return new BCryptPasswordEncoder();
@@ -51,7 +52,8 @@ public class Seguridad {
                 //asignar permisos a las URLs por Roles
                 .requestMatchers(
                         "/protegido/**"
-                ).hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+                ).hasAnyAuthority("ROLE_ADMIN")
+				//).hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
 
                 //se hacen las configuraciones generales
                 .anyRequest().authenticated()).formLogin(                		

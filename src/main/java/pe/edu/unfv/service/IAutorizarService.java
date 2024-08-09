@@ -9,6 +9,6 @@ public interface IAutorizarService {
 
 	List<AutorizarModel> getAllNameRol();
 	Optional<AutorizarModel> getAutorizationByNameRol(Integer id);	
-	AutorizarModel saveCity(AutorizarModel city);
+	void saveAutorizar(AutorizarModel autorizar);
 	void deleteAutorization(Integer id);
 }
