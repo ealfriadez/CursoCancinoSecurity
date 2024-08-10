@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:fragment="head(title, links)">
 	<meta charset="utf-8" />
@@ -20,6 +21,9 @@
 			</div>
 			<div class="card-body text-danger">
 				<div th:replace="~{layout/menu :: menu}"></div>
+				<div sec:authorize="isAuthenticated()">
+					Hola <span sec:authentication="name"></span>
+				</div>
 			</div>
 		</div>
 	</div>
