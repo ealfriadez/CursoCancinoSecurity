@@ -8,8 +8,10 @@
 		<link th:href="@{/css/style.css}" rel="stylesheet">
         <link
             rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"
-        />
+            href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <link 
+        	rel="stylesheet"
+        	href="https://fonts.googleapis.com/css?family=Playfair&#43;Display:700,900&amp;display=swap">
     </head>
     <body>
         <section class="page_404">
@@ -21,9 +23,9 @@
                                 <h1 class="text-center">403</h1>
                             </div>
                             <div class="contant_box_404">
-                                <h3 class="h2">Look like you're lost</h3>
-                                <p>the page you are looking for not avaible!</p>
-                                <a href="" class="link_404">Go to Home</a>
+                                <h3 class="h2">Parece que estás perdido</h3>
+                                <p>¡La página que estás buscando no está disponible!</p>
+                                <a th:href="@{/}" class="link_404">Ir a Inicio</a>
                             </div>
                         </div>
                     </div>

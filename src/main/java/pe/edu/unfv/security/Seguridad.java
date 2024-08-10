@@ -56,13 +56,10 @@ public class Seguridad {
 				//).hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
 
                 //se hacen las configuraciones generales
-                .anyRequest().authenticated()).formLogin(                		
-                					
-                		login -> login.permitAll()                		
-                		
-                		).logout(
-                				
-                				logout -> logout.permitAll());
+                .anyRequest().authenticated())
+						//.formLogin(login -> login.permitAll())
+						.formLogin(login -> login.permitAll().loginPage("/acceso/login"))
+						.logout(logout -> logout.permitAll());
 		
 		return httpSecurity.build();
 	}
