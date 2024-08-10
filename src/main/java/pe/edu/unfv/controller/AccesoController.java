@@ -44,7 +44,7 @@ public class AccesoController {
 		{
 			flash.addFlashAttribute("clase", "success");
 			flash.addFlashAttribute("mensaje", "Ya ha iniciado sesión anteriormente ");
-			return "redirect:/acceso/login";
+			return "redirect:/";
 		}
 		if(error!=null) 
 		{

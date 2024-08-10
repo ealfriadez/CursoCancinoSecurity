@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head th:fragment="head(title, links)">
 	<meta charset="utf-8" />
@@ -15,12 +14,13 @@
 <body>
 	<br/>
 	<div class="container">
-		<div class="card border-danger mb-3">
-			<div class="card-header bg-danger text-white">
-				<h1>Home Protegido....</h1>
+		<div class="card border-secondary mb-3">
+			<div class="card-header bg-secondary text-white">
+				<h1>Plantilla basica....</h1>
 			</div>
-			<div class="card-body text-danger">
-				<div th:replace="~{layout/menu :: menu}"></div>				
+			<div class="card-body text-secondary">
+				<div th:replace="~{layout/menu :: menu}"></div>
+				<img th:src="@{/images/pacha_mama.jpg}" width="10%" height="10%">
 			</div>
 		</div>
 	</div>
