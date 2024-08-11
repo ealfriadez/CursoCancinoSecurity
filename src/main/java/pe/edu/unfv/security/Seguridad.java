@@ -10,10 +10,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import lombok.AllArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@AllArgsConstructor
 public class Seguridad {
+	
+	private LoginPersonalizado loginPersonalizado;
 	
 	@Bean
 	AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -58,7 +63,8 @@ public class Seguridad {
                 //se hacen las configuraciones generales
                 .anyRequest().authenticated())
 						//.formLogin(login -> login.permitAll())
-						.formLogin(login -> login.permitAll().loginPage("/acceso/login"))
+						//.formLogin(login -> login.permitAll().loginPage("/acceso/login"))
+						.formLogin(login -> login.permitAll().successHandler(loginPersonalizado).loginPage("/home"))
 						.logout(logout -> logout.permitAll());
 		
 		return httpSecurity.build();
