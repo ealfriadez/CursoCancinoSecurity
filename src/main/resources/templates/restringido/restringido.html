@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+</html>
 
 <head th:fragment="head(title, links)">
 	<meta charset="utf-8" />
@@ -15,8 +17,8 @@
 	<br/>
 	<div class="container">
 		<div class="card border-warning mb-3">
-			<div class="card-header bg-warning text-white">
-				<h1>Home Restringido....</h1>
+			<div class="card-header bg-light text-white">
+				<h1>Restringido....</h1>
 			</div>
 			<div class="card-body text-warning">
 				<div th:replace="~{layout/menu :: menu}"></div>
