@@ -25,7 +25,7 @@
 
 			<form name="form" method="post" th:action="@{/acceso/login}">
 				<img th:src="@{/images/avatar.svg}">
-				<h2 class="title">Welcome</h2>
+				<h2 class="title">Bienvenido</h2>
 				<div class="input-div one">
 					<div class="i">
 						<i class="fas fa-user"></i>
@@ -49,9 +49,10 @@
 					<button th:if="${mensaje!=null}" type="button" class="btn-close" data-bs-dismiss="alert"
 						aria-label="close"></button>
 				</div>
-				<a href="#">Forgot Password?</a>
-				<!--<input type="submit" class="btn" value="Login">-->
-				<a href="javascript:void(0);" class="btn" onclick="document.form.submit();">Enviar</a>
+				<br/>
+				<a th:href="@{/acceso/registro}">No tienes cuenta aun?</a>
+				<input type="submit" class="btn" value="Login">
+				<!--<a href="javascript:void(0);" class="btn" onclick="document.form.submit();">Enviar</a>-->
 			</form>
 		</div>
 	</div>

@@ -1,4 +1,4 @@
-package pe.edu.unfv.security.service;
+package pe.edu.unfv.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package pe.edu.unfv.security.service;
+package pe.edu.unfv.security;
 
 import java.util.ArrayList;
 import java.util.List;
