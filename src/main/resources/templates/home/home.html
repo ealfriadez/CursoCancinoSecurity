@@ -22,6 +22,7 @@
 			</div>
 			<div class="card-body text-secondary">
 				<div th:replace="~{layout/menu :: menu}"></div>
+				<br/>
 				<img th:src="@{/images/pacha_mama.jpg}" width="10%" height="10%">
 				<div th:if="${mensaje!=null}" th:class="'alert alert-'+${clase}+' alert-dismissible fade show'">
 					<span th:text="${mensaje}"></span>
