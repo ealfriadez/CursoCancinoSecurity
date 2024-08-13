@@ -23,6 +23,7 @@ import pe.edu.unfv.model.UsuariosModel;
 import pe.edu.unfv.service.implement.AutorizarServiceImpl;
 import pe.edu.unfv.service.implement.RolesServiceImpl;
 import pe.edu.unfv.service.implement.UsuariosServiceImpl;
+import pe.edu.unfv.util.Constantes;
 
 @Controller
 @RequestMapping("/acceso")
@@ -78,9 +79,16 @@ public class AccesoController {
 			@Valid AutorizarModel autorizacion,
 			BindingResult result,
 			RedirectAttributes flash,
-			Model model){
+			Model model,
+			@RequestParam(name = "password") String password,
+			@RequestParam(name = "repeatPassword") String repeatPassword,
+			@RequestParam(name = "rol_") String rol_){		
 		
-		System.out.println(autorizacion.getNombre() + " ----------------------");
+		if(!password.contentEquals(repeatPassword)) {
+			flash.addFlashAttribute("clase", "danger");
+			flash.addFlashAttribute("mensaje", "Los datos ingresados no coinciden, por favor vuelva a intentarlo.");
+			return "redirect:/acceso/registro";
+		}
 		
 		if (result.hasErrors()) {
 			Map<String, String> errores = new HashMap<>();
@@ -104,13 +112,13 @@ public class AccesoController {
 						usuario.getCorreo(),
 						usuario.getTelefono(),
 						this.bCryptPasswordEncoder.encode(usuario.getPassword()),
-						1,
+						Constantes.UNO,
 						null));
 		
 		//creamos algun rol
 		this.autorizarServiceImpl.saveAutorizar(
 				new AutorizarModel(
-						"ROLE_USER", guardar));
+						rol_, guardar));
 		
 		//redireccionamos	
 		flash.addFlashAttribute("clase", "success");

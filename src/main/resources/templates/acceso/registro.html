@@ -16,9 +16,11 @@
 	<link rel="stylesheet"
 		href="https://unpkg.com/bs-brain@2.0.4/components/contacts/contact-5/assets/css/contact-5.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	
+
 	<link rel="stylesheet" href="/path/to/cdn/bootstrap.min.css" />
 	<script src="/path/to/dist/validator.min.js"></script>
+	
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
@@ -113,15 +115,22 @@
 												<path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
 											</svg>
 										</span>
-										<input type="password" class="form-control" value="" required>
+										<input type="password" id="repeatPassword" name="repeatPassword"
+											class="form-control" value="" required>
 									</div>
+								</div>
+								<div th:if="${mensaje!=null}"
+									th:class="'alert alert-'+${clase}+' alert-dismissible fade show'" role="alert">
+									<span th:text="${mensaje}"></span>
+									<button th:if="${mensaje!=null}" type="button" class="btn-close"
+										data-bs-dismiss="alert" aria-label="close"></button>
 								</div>
 								<div class="col-12">
 									<label for="subject" class="form-label">Rol de usuario <span
 											class="text-danger">*</span></label>
-									<select class="form-select" required >
+									<select id="rol_" name="rol_" class="form-select" required>
 										<option disabled="disabled" selected="selected">SELECCIONE GENERO</option>
-										<option th:each="rol : ${roles}" th:value="${rol.id}" th:text="${rol.nombre}">
+										<option th:each="rol : ${roles}" th:value="${rol.nombre}" th:text="${rol.nombre}">
 										</option>
 									</select>
 								</div>
@@ -144,9 +153,9 @@
 				</div>
 				<div class="col-12 col-lg-4">
 					<div class="img">
-			<img th:src="@{/images/bg.svg}" width="90%" >
-		</div>
-					
+						<img th:src="@{/images/bg.svg}" width="90%">
+					</div>
+
 					<!--<div class="row justify-content-xl-center">
 						<div class="col-12 col-xl-11">
 							<div class="mb-4 mb-md-5">
