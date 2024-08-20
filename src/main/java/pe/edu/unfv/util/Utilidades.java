@@ -4,9 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.Normalizer;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -80,6 +85,28 @@ public class Utilidades {
 	public static final String numberFormat(double value) {
 		DecimalFormat df = new DecimalFormat("###,###,###");
 		return df.format(value);
+	}
+	
+	public static ResponseEntity<Object> generateResponse(HttpStatus status, String mensaje){
+		
+		Map<String, Object> map = new HashMap<>();
+		try {
+			
+			map.put("fecha", new Date());
+			map.put("status", status.value());
+			map.put("mensaje", mensaje);
+			
+			return new ResponseEntity<Object>(map, status);
+			
+		} catch (Exception e) {
+			
+			map.clear();
+			map.put("fecha", new Date());
+			map.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			map.put("mensaje", e.getMessage());
+			
+			return new ResponseEntity<Object>(map, status);
+		}
 	}
 
 }

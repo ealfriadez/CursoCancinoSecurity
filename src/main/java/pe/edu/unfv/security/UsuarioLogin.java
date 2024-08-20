@@ -37,17 +37,7 @@ public class UsuarioLogin implements UserDetailsService {
 		}
 
 		// configuramos los autorities
-		List<GrantedAuthority> authorities = new ArrayList<>();
-
-		for (AutorizarModel role : usuariosModel.getAutorizar()) {
-			authorities.add(new SimpleGrantedAuthority(role.getNombre()));
-		}
-
-		System.out.println(authorities);
-
-		if (authorities.isEmpty()) {
-			throw new UsernameNotFoundException(Constantes.EL_EMAIL.concat(username).concat(Constantes.NO_ROL));
-		}
+		List<GrantedAuthority> authorities = new ArrayList<>();		
 
 		// retornamos el userDetail con los datos del usuario logueado
 		return new User(usuariosModel.getNombre(), usuariosModel.getPassword(), true, true, true, true, authorities);

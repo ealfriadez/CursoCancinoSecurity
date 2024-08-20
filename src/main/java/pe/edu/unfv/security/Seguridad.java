@@ -3,14 +3,19 @@ package pe.edu.unfv.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import pe.edu.unfv.jwt.JwtTokenFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -18,7 +23,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class Seguridad {
 
-	private LoginPersonalizado loginPersonalizado;
+	private JwtTokenFilter jwtTokenFilter;
 	
 	@Bean
 	AuthenticationManager authenticationManage(AuthenticationConfiguration authenticationConfiguration)
@@ -33,42 +38,42 @@ public class Seguridad {
 		return new BCryptPasswordEncoder();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-		httpSecurity.authorizeHttpRequests(
-
-				requests -> requests
-
-						// las vistas que seran publicas o no requieran autenticacion
-						.requestMatchers(
-								"/", 
-								"/liberada/**", 
-								"/acceso/registro").permitAll()
-
-						// asignar permisos a los recursos estaticos
-						.requestMatchers(
-								"/images/**", 
-								"/js/**", 
-								"/css/**").permitAll()
-
-						// asignar permisos a las URLs por Roles
-						.requestMatchers(
-								"/protegido/**").hasAnyAuthority("ROLE_ADMIN")						
-
-						// se hacen las configuraciones generales
-						.anyRequest().authenticated())
+        httpSecurity
+                .csrf((csrf) ->
+                        csrf.disable())
+                .sessionManagement((session) ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(handling -> handling
+                        .authenticationEntryPoint((request, response, ex) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                        }))
+                .addFilterBefore(jwtTokenFilter, (Class<? extends Filter>) UsernamePasswordAuthenticationToken.class)         
+                .authorizeHttpRequests((authorizeHttpRequests) ->
+                	authorizeHttpRequests.requestMatchers("/api/v1/login").permitAll().anyRequest().authenticated());
+                ;
 		
-				//pagina de login
-				.formLogin(
-						
-						login -> login.permitAll().loginPage("/acceso/login").successHandler(loginPersonalizado))
-						//login -> login.permitAll().successHandler(loginPersonalizado))
-				
-				.logout(
-						
-						logout -> logout.permitAll());
-
-		return httpSecurity.build();
+		return httpSecurity			        
+				.build();
 	}
+	
+	/*
+	@Bean
+	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+
+		httpSecurity
+			.csrf((csrf) -> 
+				csrf.disable())	
+			.authorizeHttpRequests((authorizeHttpRequests) ->
+				authorizeHttpRequests.anyRequest().permitAll())
+			.sessionManagement((session) -> 
+				session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		
+		return httpSecurity			        
+				.build();
+	}
+	*/
 }
