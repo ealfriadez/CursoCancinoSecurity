@@ -51,10 +51,9 @@ public class Seguridad {
                         .authenticationEntryPoint((request, response, ex) -> {
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                         }))
-                .addFilterBefore(jwtTokenFilter, (Class<? extends Filter>) UsernamePasswordAuthenticationToken.class)         
+                .addFilterBefore(this.jwtTokenFilter, UsernamePasswordAuthenticationToken.class)         
                 .authorizeHttpRequests((authorizeHttpRequests) ->
-                	authorizeHttpRequests.requestMatchers("/api/v1/login").permitAll().anyRequest().authenticated());
-                ;
+                	authorizeHttpRequests.requestMatchers("/api/v1/login").permitAll().anyRequest().authenticated());                
 		
 		return httpSecurity			        
 				.build();

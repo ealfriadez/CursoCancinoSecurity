@@ -20,7 +20,7 @@ import pe.edu.unfv.util.Utilidades;
 
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/api/v1")
 @AllArgsConstructor
 public class BdController {
 
