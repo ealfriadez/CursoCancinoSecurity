@@ -75,7 +75,7 @@ public class Seguridad {
                 	authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
                 	
                 	//Configurar los endpoints privados
-                	authorizeHttpRequests.requestMatchers(HttpMethod.GET, "/api/v1/categorias").anonymous();     	
+                	//authorizeHttpRequests.requestMatchers(HttpMethod.GET, "/api/v1/categorias");     	
                 	
                 	//Configurar el resto de endpoints - NO ESPECIFICADOS
                 	authorizeHttpRequests.anyRequest().denyAll();
