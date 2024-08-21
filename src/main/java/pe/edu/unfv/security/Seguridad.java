@@ -2,6 +2,7 @@ package pe.edu.unfv.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -11,11 +12,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import pe.edu.unfv.jwt.JwtTokenFilter;
+import pe.edu.unfv.jwt.JwtUtils;
+import pe.edu.unfv.security.filter.JwtTokenValidator;
 
 @Configuration
 @EnableWebSecurity
@@ -24,6 +28,8 @@ import pe.edu.unfv.jwt.JwtTokenFilter;
 public class Seguridad {
 
 	private JwtTokenFilter jwtTokenFilter;
+	
+	private JwtUtils jwtUtils;
 	
 	@Bean
 	AuthenticationManager authenticationManage(AuthenticationConfiguration authenticationConfiguration)
@@ -37,27 +43,48 @@ public class Seguridad {
 		
 		return new BCryptPasswordEncoder();
 	}
-
-	@SuppressWarnings("unchecked")
+	
+	/*
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity
-                .csrf((csrf) ->
-                        csrf.disable())
-                .sessionManagement((session) ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+		return httpSecurity
+                .csrf(csrf -> csrf.disable())                
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))                		        
+				.build();
+	}
+	*/
+	
+	
+	@Bean
+	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+
+		return httpSecurity
+                .csrf(csrf -> csrf.disable())                
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint((request, response, ex) -> {
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                         }))
-                .addFilterBefore(this.jwtTokenFilter, UsernamePasswordAuthenticationToken.class)         
-                .authorizeHttpRequests((authorizeHttpRequests) ->
-                	authorizeHttpRequests.requestMatchers("/api/v1/login").permitAll().anyRequest().authenticated());                
+                //.addFilterBefore(this.jwtTokenFilter, UsernamePasswordAuthenticationToken.class)         
+                .authorizeHttpRequests(authorizeHttpRequests -> {                	
+                	
+                	//Configurar los endpoints publicos                	
+                	authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/api/v1/login").permitAll();
+                	//authorizeHttpRequests.requestMatchers(HttpMethod.GET, "/api/v1/categorias").permitAll();
+                	authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
+                	
+                	//Configurar los endpoints privados
+                	authorizeHttpRequests.requestMatchers(HttpMethod.GET, "/api/v1/categorias").anonymous();     	
+                	
+                	//Configurar el resto de endpoints - NO ESPECIFICADOS
+                	authorizeHttpRequests.anyRequest().denyAll();
+                })
 		
-		return httpSecurity			        
+                .addFilterBefore(new JwtTokenValidator(this.jwtUtils), BasicAuthenticationFilter.class)
 				.build();
 	}
+	
 	
 	/*
 	@Bean

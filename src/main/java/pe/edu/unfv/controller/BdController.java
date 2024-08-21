@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,11 +23,13 @@ import pe.edu.unfv.util.Utilidades;
 @RestController
 @RequestMapping("/api/v1")
 @AllArgsConstructor
+//@PreAuthorize("denyAll()")
 public class BdController {
 
 	private CategoriasServiceImpl categoriasServiceImpl;	
 	
 	@GetMapping("/categorias")
+	//@PreAuthorize("permitAll()")
 	public List<CategoriasModel> categorias() {
 		
 		return this.categoriasServiceImpl.getAllCategorys();
