@@ -37,6 +37,7 @@ public class JwtTokenValidator extends OncePerRequestFilter{
 		
 		if (jwtToken != null) { //Bearer asdasd32a1d2as1d1asd1asd132a1sd
 			jwtToken = jwtToken.substring(7);
+			System.out.println(jwtToken.toString());
 			
 			DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
 			

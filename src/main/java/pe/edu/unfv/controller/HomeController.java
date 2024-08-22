@@ -1,18 +1,15 @@
 package pe.edu.unfv.controller;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@RequestMapping("/")
+@RestController
+@RequestMapping("/api/v1")
 public class HomeController {
-
-	/*
-	 * @GetMapping("") public String home() { return "home/index"; }
-	 */
-	@GetMapping("")
+	
+	@GetMapping("demo")
 	public String home_home() {
-		return "home/home";
+		return "ok - vamos bien";
 	}
 }
