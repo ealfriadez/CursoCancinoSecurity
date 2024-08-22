@@ -16,14 +16,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.servlet.support.JstlUtils;
 
 import lombok.AllArgsConstructor;
+import pe.edu.unfv.security.filter.JwtTokenValidator;
+import pe.edu.unfv.util.JwtUtils;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 @AllArgsConstructor
 public class Seguridad {		
+	
+	private JwtUtils jwtUtils;
 	
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -45,6 +51,7 @@ public class Seguridad {
 					http.requestMatchers(HttpMethod.PATCH, "/api/v1/patch").hasAnyAuthority("REFACTOR");
 				})
 				
+				.addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
 				.build();
 	}
 	
