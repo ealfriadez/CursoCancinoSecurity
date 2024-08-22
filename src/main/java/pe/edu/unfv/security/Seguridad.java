@@ -1,8 +1,5 @@
 package pe.edu.unfv.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,12 +12,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import lombok.AllArgsConstructor;
@@ -38,17 +32,19 @@ public class Seguridad {
 				.csrf(csrf -> csrf.disable()) //se desabilita porque no se necesita esto es solo para WEB				
 				.httpBasic(Customizer.withDefaults())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				
+				//Configurar los endpoints publicos
 				.authorizeHttpRequests(http -> {
 						
-						//configurar los endpoints publicos
-						http.requestMatchers(HttpMethod.GET, "/api/v1/demo").permitAll();
-						
-						//configurar los endpoint privados
-						http.requestMatchers(HttpMethod.GET, "/api/v1/demo-security").hasAuthority("CREATE");
+					//Configurar los endpoints publicos
+					http.requestMatchers(HttpMethod.GET, "/api/v1/get").permitAll();
 					
-						//configurar el resto de enpoins - NO ESPECIFICADOS
-						http.anyRequest().denyAll();
-					})
+					//Configurar los endpoints privados
+					//http.requestMatchers(HttpMethod.POST, "/api/v1/post").hasAnyAuthority("CREATE", "READ");
+					http.requestMatchers(HttpMethod.POST, "/api/v1/post").hasAnyRole("ADMIN", "DEVELOPER");
+					http.requestMatchers(HttpMethod.PATCH, "/api/v1/patch").hasAnyAuthority("REFACTOR");
+				})
+				
 				.build();
 	}
 	
@@ -72,6 +68,15 @@ public class Seguridad {
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		
-		return NoOpPasswordEncoder.getInstance();
+		//return NoOpPasswordEncoder.getInstance(); solo desarrollo
+		
+		return new BCryptPasswordEncoder();
 	}	
+	
+	/*
+	public static void main(String[] args) {
+		
+		System.out.println(new BCryptPasswordEncoder().encode("1234"));
+	} 
+	*/
 }

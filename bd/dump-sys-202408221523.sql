@@ -1261,7 +1261,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (_binary '',_binary '',_binary '',_binary '',1,'snalfriadez@gmail.com','1234','santiago'),(_binary '',_binary '',_binary '',_binary '',2,'salfriadez@gmail.com','1234','sebastian'),(_binary '',_binary '',_binary '',_binary '',3,'pilaxis@gmail.com','1234','pilar'),(_binary '',_binary '',_binary '',_binary '',4,'moka@gmail.com','1234','moka');
+INSERT INTO `users` VALUES (_binary '',_binary '',_binary '',_binary '',1,'snalfriadez@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','santiago'),(_binary '',_binary '',_binary '',_binary '',2,'salfriadez@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','sebastian'),(_binary '',_binary '',_binary '',_binary '',3,'pilaxis@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','pilar'),(_binary '',_binary '',_binary '',_binary '',4,'moka@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','moka');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -5190,4 +5190,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-22 11:37:34
+-- Dump completed on 2024-08-22 15:23:08

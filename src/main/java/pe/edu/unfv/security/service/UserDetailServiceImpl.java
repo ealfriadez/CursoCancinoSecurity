@@ -23,10 +23,10 @@ public class UserDetailServiceImpl implements UserDetailsService{
 	private UserRepository userRepository;
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
 		
-		UserEntity userEntity = userRepository.findByUsername(username)
-				.orElseThrow(() -> new UsernameNotFoundException("El usuario " + username + " no existe"));
+		UserEntity userEntity = userRepository.findByCorreo(correo)
+				.orElseThrow(() -> new UsernameNotFoundException("El usuario " + correo + " no existe"));
 		
 		List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
 		

@@ -20,7 +20,7 @@ public class CursoCancinoSecurityApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CursoCancinoSecurityApplication.class, args);
 	}	
-	
+	/*
 	@Bean
 	CommandLineRunner init(UserRepository userRepository) {
 		
@@ -116,5 +116,5 @@ public class CursoCancinoSecurityApplication {
 			userRepository.saveAll(List.of(userSantiago, userSebastian, userPilar, userMoka));
 		};		
 	}
-	
+	*/
 }
