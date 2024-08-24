@@ -8,6 +8,5 @@ public class CursoCancinoSecurityApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CursoCancinoSecurityApplication.class, args);
-	}
-
+	}		
 }
