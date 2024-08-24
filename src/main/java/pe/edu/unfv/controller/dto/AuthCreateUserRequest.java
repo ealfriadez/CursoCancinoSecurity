@@ -7,6 +7,7 @@ public record AuthCreateUserRequest(
 		
 		@NotBlank String username,
 		@NotBlank String password,
+		@NotBlank String email,
 		@Valid AuthCreateRoleRequest roleRequest
 		) {
 }
