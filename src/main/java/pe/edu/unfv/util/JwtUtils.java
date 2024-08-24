@@ -24,13 +24,11 @@ public class JwtUtils {
 	private String privateKey;
 	
 	@Value("${security.jwt.user.generator}")
-	private String userGenerator;
-	
-	Algorithm algorithm;
+	private String userGenerator;	
 	
 	public String createToken(Authentication authentication) {		
 		
-		algorithm = Algorithm.HMAC256(this.privateKey);
+		Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
 		
 		String username = authentication.getPrincipal().toString();
 		
@@ -52,11 +50,11 @@ public class JwtUtils {
 		return jwtToken;
 	}
 	
-	public DecodedJWT validateToken(String token) {
-		
-		algorithm = Algorithm.HMAC256(this.privateKey);
+	public DecodedJWT validateToken(String token) {		
 		
 		try {
+			
+			Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
 			
 			JWTVerifier verifier = JWT.require(algorithm)
 					.withIssuer(this.userGenerator)

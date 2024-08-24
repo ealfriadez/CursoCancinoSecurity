@@ -32,7 +32,7 @@ public class Seguridad {
 	private JwtUtils jwtUtils;
 	
 	@Bean
-	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+	SecurityFilterChain filterChain(HttpSecurity httpSecurity,  AuthenticationProvider authenticationProvide) throws Exception {
 
 		return httpSecurity 
 				.csrf(csrf -> csrf.disable()) //se desabilita porque no se necesita esto es solo para WEB				
@@ -43,12 +43,17 @@ public class Seguridad {
 				.authorizeHttpRequests(http -> {
 						
 					//Configurar los endpoints publicos
-					http.requestMatchers(HttpMethod.GET, "/api/v1/get").permitAll();
+					//http.requestMatchers(HttpMethod.GET, "/method/get").permitAll();
+					http.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
 					
 					//Configurar los endpoints privados
 					//http.requestMatchers(HttpMethod.POST, "/api/v1/post").hasAnyAuthority("CREATE", "READ");
-					http.requestMatchers(HttpMethod.POST, "/api/v1/post").hasAnyRole("ADMIN", "DEVELOPER");
-					http.requestMatchers(HttpMethod.PATCH, "/api/v1/patch").hasAnyAuthority("REFACTOR");
+					http.requestMatchers(HttpMethod.POST, "/method/post").hasAnyRole("ADMIN", "DEVELOPER");
+					http.requestMatchers(HttpMethod.PATCH, "/method/patch").hasAnyAuthority("REFACTOR");
+					http.requestMatchers(HttpMethod.GET, "/method/get").hasAnyRole("INVITED");
+				
+					//Confifurar el resto de endpoints - NO ESPECIFICADOS
+					http.anyRequest().denyAll();
 				})
 				
 				.addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)

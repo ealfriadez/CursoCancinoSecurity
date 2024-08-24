@@ -11,5 +11,5 @@ import pe.edu.unfv.persistence.entity.UserEntity;
 @Repository
 public interface UserRepository extends CrudRepository<UserEntity, Long>{
 
-	Optional<UserEntity> findByCorreo(String correo);
+	Optional<UserEntity> findUserEntityByUsername(String username);
 }
