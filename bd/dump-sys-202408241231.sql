@@ -1119,7 +1119,7 @@ CREATE TABLE `user_roles` (
 
 LOCK TABLES `user_roles` WRITE;
 /*!40000 ALTER TABLE `user_roles` DISABLE KEYS */;
-INSERT INTO `user_roles` VALUES (1,1),(2,2),(3,3),(4,4);
+INSERT INTO `user_roles` VALUES (1,1),(2,2),(3,3),(4,4),(3,12),(4,15),(4,16),(4,23),(4,26);
 /*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1246,13 +1246,13 @@ CREATE TABLE `users` (
   `credential_no_expired` bit(1) DEFAULT NULL,
   `is_enabled` bit(1) DEFAULT NULL,
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `correo` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `username` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UKqs4hlsdf7l1k1u4on057c0949` (`correo`),
+  UNIQUE KEY `UKqs4hlsdf7l1k1u4on057c0949` (`email`),
   UNIQUE KEY `UKr43af9ap4edm43mmtq01oddj6` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1261,7 +1261,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (_binary '',_binary '',_binary '',_binary '',1,'snalfriadez@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','santiago'),(_binary '',_binary '',_binary '',_binary '',2,'salfriadez@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','sebastian'),(_binary '',_binary '',_binary '',_binary '',3,'pilaxis@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','pilar'),(_binary '',_binary '',_binary '',_binary '',4,'moka@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','moka');
+INSERT INTO `users` VALUES (_binary '',_binary '',_binary '',_binary '',1,'snalfriadez@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','santiago'),(_binary '',_binary '',_binary '',_binary '',2,'salfriadez@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','sebastian'),(_binary '',_binary '',_binary '',_binary '',3,'pilaxis@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','pilar'),(_binary '',_binary '',_binary '',_binary '',4,'moka@gmail.com','$2a$10$QTRQdl7Q8T0YT8UCEwtLs.nkv3h62obE8jhPXlCVv35rYvg7x.t.G','moka'),(_binary '',_binary '',_binary '',_binary '',12,'xxx@gmail.com','$2a$10$YxFZiH63DwQeuVyYEDYuzu2PBDIAp2tDG.5.wYlheWviivxbUzy8q','ada'),(_binary '',_binary '',_binary '',_binary '',15,'yyy@gmail.com','$2a$10$oBrvzZ1Ijx./FyWDr/YyOuAI/2HAgC7TYO4yZ0e.P0sZsYMtG0xi6','ligia'),(_binary '',_binary '',_binary '',_binary '',16,'alfredo@gmail.com','$2a$10$vuQ4CouNS1n.LYkOjhqEkOLiVZho9FtjLXjnedTxrpwhQHGl9pvIG','alfredo'),(_binary '',_binary '',_binary '',_binary '',23,'maria@gmail.com','$2a$10$lkjwkaQjtWLaOfI6S6fli.XuFhIfVL1QOy3qdd0JIWeK4JXWim6Wq','maria'),(_binary '',_binary '',_binary '',_binary '',24,'maria22@gmail.com','$2a$10$JBgTg2k8JiYAQOqZ8Ta/N.gkDv7yO1Wzx0195UEj5UD3SqPh6vaKe','maria11'),(_binary '',_binary '',_binary '',_binary '',25,'mariqa22@gmail.com','$2a$10$i4tsDSgZVy94mwaINzD/ceR0M0WYhCEy7m9S817H6mUGkT.UwQ6dy','maria1q1'),(_binary '',_binary '',_binary '',_binary '',26,'mariqa2S2@gmail.com','$2a$10$8RGELNOTTSD2JwIWXpRZgu41DMBqnCAzkmO3EvNOmXf7tiQz9.qFK','mariaS1q1');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -5190,4 +5190,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-22 15:23:08
+-- Dump completed on 2024-08-24 12:31:25

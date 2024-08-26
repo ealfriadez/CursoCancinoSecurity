@@ -17,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.servlet.support.JstlUtils;
 
 import lombok.AllArgsConstructor;
 import pe.edu.unfv.security.filter.JwtTokenValidator;
@@ -78,17 +77,8 @@ public class Seguridad {
 	}
 	
 	@Bean
-	PasswordEncoder passwordEncoder() {
-		
-		//return NoOpPasswordEncoder.getInstance(); solo desarrollo
+	PasswordEncoder passwordEncoder() {		
 		
 		return new BCryptPasswordEncoder();
-	}	
-	
-	/*
-	public static void main(String[] args) {
-		
-		System.out.println(new BCryptPasswordEncoder().encode("1234"));
-	} 
-	*/
+	}		
 }
