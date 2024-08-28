@@ -1,13 +1,25 @@
 package pe.edu.unfv.controller.dto;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record AuthCreateUserRequest(
 		
-		@NotBlank String username,
-		@NotBlank String password,
-		@NotBlank String email,
-		@Valid AuthCreateRoleRequest roleRequest
+		@NotBlank(message = "The user name is required.")		
+		@Size(min = 4, message = "The user name must be at least 4 characters.")
+		String username,
+		
+		@NotBlank(message = "The password is required.")
+		@Size(min = 4, message = "The password must be at least 4 characters.")
+		String password,
+		
+		@NotBlank(message = "The password is required.")
+		@Email(message = "User name must be a correctly formatted email address.")
+		String email,				
+		
+		@Valid		
+		AuthCreateRoleRequest roleRequest
 		) {
 }

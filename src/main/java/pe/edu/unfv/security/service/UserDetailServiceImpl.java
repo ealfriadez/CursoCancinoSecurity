@@ -64,22 +64,7 @@ public class UserDetailServiceImpl implements UserDetailsService{
 				userEntity.isAccountNoLocked(),
 				authorityList
 				);
-	}
-	
-	public AuthResponse loginUser(AuthLoginRequest authLoginRequest) {
-		
-		String username = authLoginRequest.username();
-		String password = authLoginRequest.password();
-		
-		Authentication authentication = this.authenticate(username, password);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		
-		String accessToken = jwtUtils.createToken(authentication);
-		
-		AuthResponse authResponse = new AuthResponse(username, "User loged successfuly", accessToken, true);
-		
-		return authResponse;
-	}	
+	}		
 	
 	public Authentication authenticate(String username, String password) {
 		
@@ -94,69 +79,104 @@ public class UserDetailServiceImpl implements UserDetailsService{
 		}
 		
 		return new UsernamePasswordAuthenticationToken(username, userDetails.getPassword(), userDetails.getAuthorities());
-	}
-
-	public AuthResponse createUser(AuthCreateUserRequest authCreateUserRequest) {
+	}	
+	
+	public AuthResponse loginUser(AuthLoginRequest authLoginRequest) {
 		
+		String username = authLoginRequest.username();
+		String password = authLoginRequest.password();
+		
+		try {
+		
+			Authentication authentication = this.authenticate(username, password);
+			
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			
+			String accessToken = jwtUtils.createToken(authentication);
+			
+			AuthResponse authResponse = new AuthResponse(username, "User loged successfuly", accessToken, true);
+			
+			return authResponse;
+			
+		} catch (Exception e) {
+			
+			AuthResponse authResponse = new AuthResponse(username, e.getMessage(), "Not generated.", false);
+			
+			return authResponse;			
+		}		
+	}
+	
+	public AuthResponse createUser(AuthCreateUserRequest authCreateUserRequest) {
+			
 		String username = authCreateUserRequest.username();
 		String password = authCreateUserRequest.password();
 		String email = authCreateUserRequest.email();
-		List<String> roleRequest = authCreateUserRequest.roleRequest().roleListName();
 		
-		Optional<UserEntity> usernameExist = userRepository.findUserEntityByUsername(username);
-		
-		Optional<UserEntity> emailExist = userRepository.findUserEntityByEmail(email);
-		
-		Set<RoleEntity> roleEntitySet = roleRepository.findRoleEntitiesByRoleEnumIn(roleRequest).stream().collect(Collectors.toSet());
-		
-		if (usernameExist.isPresent()) {
+		try {			
 			
-			AuthResponse authResponseUser = new AuthResponse(username, "The user exist in our data base.", "Not generated.", false);
-			return authResponseUser;
-		}
-		
-		if (emailExist.isPresent()) {
+			List<String> roleRequest = authCreateUserRequest.roleRequest().roleListName();
 			
-			AuthResponse authResponseEmail = new AuthResponse(username, "The email exist in our data base.", "Not generated.", false);
-			return authResponseEmail;
-		}
-		
-		if (roleEntitySet.isEmpty()) {			
+			Optional<UserEntity> usernameExist = userRepository.findUserEntityByUsername(username);
 			
-			AuthResponse authResponse = new AuthResponse(username, "The specified roles do not exist or none were entered.", "Not generated.", false);
+			Optional<UserEntity> emailExist = userRepository.findUserEntityByEmail(email);
+			
+			Set<RoleEntity> roleEntitySet = roleRepository.findRoleEntitiesByRoleEnumIn(roleRequest).stream().collect(Collectors.toSet());
+			
+			if (usernameExist.isPresent()) {
+				
+				AuthResponse authResponseUser = new AuthResponse(username, "The user exist in our data base.", "Not generated.", false);
+				return authResponseUser;
+			}
+			
+			if (emailExist.isPresent()) {
+				
+				AuthResponse authResponseEmail = new AuthResponse(username, "The email exist in our data base.", "Not generated.", false);
+				return authResponseEmail;
+			}
+			
+			if (roleEntitySet.isEmpty()) {			
+				
+				AuthResponse authResponse = new AuthResponse(username, "The specified roles do not exist or none were entered.", "Not generated.", false);
+				return authResponse;
+			}		
+			
+			UserEntity userEntity = UserEntity.builder()
+					.username(username)
+					.password(passwordEncoder.encode(password))	
+					.email(email)
+					.isEnabled(true)
+					.accountNoLocked(true)
+					.accountNoExpired(true)
+					.credentialNoExpired(true)
+					.roles(roleEntitySet)
+					.build();
+					
+			UserEntity userCreated = userRepository.save(userEntity);
+			
+			ArrayList<SimpleGrantedAuthority> authorityList = new ArrayList<>();
+			
+			userCreated.getRoles().forEach(role ->
+				authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRoleEnum().name())))
+					);
+			
+			userCreated.getRoles()
+				.stream()
+				.flatMap(role -> role.getPermissionList().stream())
+				.forEach(permission -> authorityList.add(new SimpleGrantedAuthority(permission.getName())));
+					
+			Authentication authentication = new UsernamePasswordAuthenticationToken(userCreated.getUsername(), userCreated.getPassword(), authorityList);
+			
+			String accesToken = this.jwtUtils.createToken(authentication);
+			
+			AuthResponse authResponse = new AuthResponse(userCreated.getUsername(), "User created successfully", accesToken, true);
+			
 			return authResponse;
-		}		
-		
-		UserEntity userEntity = UserEntity.builder()
-				.username(username)
-				.password(passwordEncoder.encode(password))	
-				.email(email)
-				.isEnabled(true)
-				.accountNoLocked(true)
-				.accountNoExpired(true)
-				.credentialNoExpired(true)
-				.roles(roleEntitySet)
-				.build();
-				
-		UserEntity userCreated = userRepository.save(userEntity);
-		
-		ArrayList<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-		
-		userCreated.getRoles().forEach(role ->
-			authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRoleEnum().name())))
-				);
-		
-		userCreated.getRoles()
-			.stream()
-			.flatMap(role -> role.getPermissionList().stream())
-			.forEach(permission -> authorityList.add(new SimpleGrantedAuthority(permission.getName())));
-				
-		Authentication authentication = new UsernamePasswordAuthenticationToken(userCreated.getUsername(), userCreated.getPassword(), authorityList);
-		
-		String accesToken = this.jwtUtils.createToken(authentication);
-		
-		AuthResponse authResponse = new AuthResponse(userCreated.getUsername(), "User created successfully", accesToken, true);
-		
-		return authResponse;		
+			
+		} catch (Exception e) {
+			
+			AuthResponse authResponse = new AuthResponse(username, e.getMessage(), "Not generated.", false);
+			
+			return authResponse;
+		}				
 	}
 }
