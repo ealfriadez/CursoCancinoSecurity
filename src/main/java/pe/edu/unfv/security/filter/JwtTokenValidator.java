@@ -20,7 +20,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-import pe.edu.unfv.util.JwtUtils;
+import pe.edu.unfv.util.security.JwtUtils;
 
 @AllArgsConstructor
 public class JwtTokenValidator extends OncePerRequestFilter{
