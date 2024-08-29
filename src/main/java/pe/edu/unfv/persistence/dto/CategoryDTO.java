@@ -15,5 +15,5 @@ public class CategoryDTO {
 	@Size(min = 4, max = 50, message = "The category name must be between 4 and 50 characters")
     private String nombre;
 	
-	//private String slug;
+	private String slug;
 }

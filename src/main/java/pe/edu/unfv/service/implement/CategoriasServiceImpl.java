@@ -1,9 +1,7 @@
 package pe.edu.unfv.service.implement;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -71,7 +69,8 @@ public class CategoriasServiceImpl implements ICategoriasService{
 	private CategoryDTO convertCategoryToDTO(CategoriasModel categoriasModel) {
 		
 		CategoryDTO categoryDTO = new CategoryDTO();
-		categoryDTO.setNombre(categoriasModel.getNombre());		
+		categoryDTO.setNombre(categoriasModel.getNombre());	
+		categoryDTO.setSlug(categoriasModel.getSlug());	
 		
 		return categoryDTO;
 	}
