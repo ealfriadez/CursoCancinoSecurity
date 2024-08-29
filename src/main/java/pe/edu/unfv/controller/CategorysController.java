@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import pe.edu.unfv.util.Utilidades;
 @RestController
 @RequestMapping("/v1")
 @AllArgsConstructor
-public class BdController {
+public class CategorysController {
 
 	private CategoriasServiceImpl categoriasServiceImpl;
 	
@@ -51,15 +52,14 @@ public class BdController {
 	}
 	
 	@PostMapping("/")
-	public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryDTO categoryDTO, BindingResult result){
-		
+	public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryDTO categoryDTO, BindingResult result){		
 		if (result.hasErrors()) {
             String firstErrorMessage = result.getAllErrors().stream()
                 .map(ObjectError::getDefaultMessage)
                 .findFirst()
                 .orElse("Unknown validation error");
             return new ResponseEntity<>(new ResponseNew(firstErrorMessage), HttpStatus.BAD_REQUEST);
-        }
+        }		
 		
 		if (this.categoriasServiceImpl.existsCategoryByName(categoryDTO.getNombre())) {
             
@@ -87,9 +87,9 @@ public class BdController {
             return new ResponseEntity<>(new ResponseNew(firstErrorMessage), HttpStatus.BAD_REQUEST);
         }
 		
-		if (!this.categoriasServiceImpl.existsCategoryById(id)) {			
-			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, "Category with id: ".concat(id +" does not exist"));
-		}
+		if (this.categoriasServiceImpl.getCategoryModelById(id) == null) {
+			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, "Category with id: ".concat(id +" does not exist 111"));
+		}		
 		
 		CategoryDTO existingCategory = this.categoriasServiceImpl.getCategoryById(id);
 		
@@ -100,7 +100,11 @@ public class BdController {
 		
 		try {
 			
-			this.categoriasServiceImpl.saveCategory(categoryDTO);			
+			CategoriasModel categoriasModel = this.categoriasServiceImpl.getCategoryModelById(id);
+			categoriasModel.setNombre(categoryDTO.getNombre());
+			categoriasModel.setSlug(Utilidades.getSlug(categoriasModel.getNombre()));
+			
+			this.categoriasServiceImpl.saveCategoryModel(categoriasModel);		
 			return Utilidades.generateResponse(HttpStatus.OK, "Category updated successfully.");
 		} catch (IllegalArgumentException i) {
 			
@@ -108,6 +112,21 @@ public class BdController {
 		} catch (Exception e) {
 			
 			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error registering category: " + e.getMessage());
+		}		
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?>  deleteCategoryById(@PathVariable("id") int id) {
+		
+		if (!this.categoriasServiceImpl.existsCategoryById(id)) {			
+			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, "Category with id: ".concat(id +" does not exist"));
+		}
+		
+		try {
+			this.categoriasServiceImpl.deleteCategory(id);
+			return Utilidades.generateResponse(HttpStatus.OK, "Category deleted successfully.");
+		} catch (Exception e) {
+			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving category: " + e.getMessage());			
 		}		
 	}
 }

@@ -8,13 +8,12 @@ import pe.edu.unfv.persistence.entity.model.CategoriasModel;
 public interface ICategoriasService {
 
 	List<CategoriasModel> getAllCategorys();
-	//CategoriasModel getCategoryById(Integer id);	
-	//void saveCategory(CategoriasModel category);
-	void deleteCategory(Integer id);	
-	
 	boolean existsCategoryById(Integer id);
 	boolean existsCategoryByName(String name);
 	boolean existsCategoryByNameExcludingId(String name, int id);
 	CategoryDTO saveCategory(CategoryDTO categoryDTO);
+	CategoriasModel getCategoryModelById(int id);
 	CategoryDTO getCategoryById(Integer id);
+	void saveCategoryModel(CategoriasModel categoriasModel);
+	void deleteCategory(int id);
 }

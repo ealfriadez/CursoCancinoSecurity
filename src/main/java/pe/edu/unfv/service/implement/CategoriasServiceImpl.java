@@ -1,6 +1,7 @@
 package pe.edu.unfv.service.implement;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Sort;
@@ -35,6 +36,24 @@ public class CategoriasServiceImpl implements ICategoriasService{
 	}	
 	
 	@Override
+	public void saveCategoryModel(CategoriasModel categoriasModel) {
+
+		this.iCategoriasRepository.save(categoriasModel);		
+	}
+	
+	@Override
+	public CategoriasModel getCategoryModelById(int id) {
+		
+		Optional<CategoriasModel> categoriasModel = this.iCategoriasRepository.findById(id);
+		
+		if (categoriasModel.isPresent()) {
+			return categoriasModel.get();
+		}
+		
+		return null;
+	}
+	
+	@Override
 	public CategoryDTO getCategoryById(Integer id) {
 		
 		return this.iCategoriasRepository.findById(id)
@@ -43,7 +62,7 @@ public class CategoriasServiceImpl implements ICategoriasService{
 	}	
 
 	@Override
-	public void deleteCategory(Integer id) {
+	public void deleteCategory(int id) {
 		
 		this.iCategoriasRepository.deleteById(id);
 	}
@@ -82,5 +101,5 @@ public class CategoriasServiceImpl implements ICategoriasService{
         category.setSlug(Utilidades.getSlug(categoryDTO.getNombre()));        
         
         return category;
-    }	
+    }		
 }
