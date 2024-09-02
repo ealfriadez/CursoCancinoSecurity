@@ -28,6 +28,8 @@ public class ProductDTO {
 	@NotNull(message = "Price cannot be null")
     @Min(value = 1, message = "Price must be a positive value")
 	private int precio;
+	
+	private String foto;
     
 	@NotNull(message = "Category cannot be null")
     private int categoriaId;

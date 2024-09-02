@@ -15,6 +15,7 @@ public interface IProductosService {
 	ProductDTO getProductDTOById(int id);
 	ProductosModel getProductModelById(int id);
 	ProductDTO saveProduct(ProductDTO productDTO);
+	void saveProductoModel(ProductosModel productosModel);
 	
 	/*
 	

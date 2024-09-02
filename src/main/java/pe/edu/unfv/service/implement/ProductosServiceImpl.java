@@ -50,6 +50,12 @@ public class ProductosServiceImpl implements IProductosService {
 		
 		return this.iProductosRepository.existsProductByNombre(name);
 	}
+	
+	@Override
+	public void saveProductoModel(ProductosModel productosModel) {
+		
+		this.iProductosRepository.save(productosModel);		
+	}	
 
 	@Override
 	public ProductDTO saveProduct(ProductDTO productDTO) {
