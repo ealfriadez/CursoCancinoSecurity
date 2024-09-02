@@ -16,19 +16,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="ImageData")
+@Table(name="imagedata")
 @Builder
 public class ImageDataModel {
 
 	 @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private int id;
+	 @GeneratedValue(strategy = GenerationType.IDENTITY)
+	 private int id;
 
-	    private String name;
+	 private String name;
 
-	    private String type;
+	 private String type;
 
-	    @Lob
-	    @Column(name="imageData")
-	    private byte[] imageData;
+	 @Lob
+	 @Column(name="imageData")
+	 private byte[] imageData;
 }

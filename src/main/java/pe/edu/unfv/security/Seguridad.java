@@ -57,7 +57,7 @@ public class Seguridad {
 					http.requestMatchers(HttpMethod.PUT, "/v1/{id}").hasAnyRole("ADMIN", "DEVELOPER");
 					http.requestMatchers(HttpMethod.DELETE, "/v1/{id}").hasAnyRole("ADMIN", "DEVELOPER");
 					
-					http.requestMatchers(HttpMethod.POST, "/v1/products").hasAnyRole("ADMIN", "DEVELOPER");
+					http.requestMatchers(HttpMethod.POST, "/v1/products/**").hasAnyRole("ADMIN", "DEVELOPER");
 				
 					//Confifurar el resto de endpoints - NO ESPECIFICADOS
 					http.anyRequest().denyAll();

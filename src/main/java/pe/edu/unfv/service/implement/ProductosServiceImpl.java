@@ -1,18 +1,22 @@
 package pe.edu.unfv.service.implement;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import pe.edu.unfv.persistence.dto.ProductDTO;
 import pe.edu.unfv.persistence.entity.model.CategoriasModel;
+import pe.edu.unfv.persistence.entity.model.ImageDataModel;
 import pe.edu.unfv.persistence.entity.model.ProductosModel;
 import pe.edu.unfv.persistence.repository.IProductosRepository;
 import pe.edu.unfv.service.IProductosService;
+import pe.edu.unfv.util.ImageUtils;
 import pe.edu.unfv.util.Utilidades;
 
 @Service
@@ -55,15 +59,17 @@ public class ProductosServiceImpl implements IProductosService {
 	public void saveProductoModel(ProductosModel productosModel) {
 		
 		this.iProductosRepository.save(productosModel);		
-	}	
+	}
+	
+	
 
 	@Override
 	public ProductDTO saveProduct(ProductDTO productDTO) {
 		
 		ProductosModel productosModel = convertDTOtoProduct(productDTO);
 		return convertProductToDTO(this.iProductosRepository.save(productosModel));
-	} 	
-
+	}
+	
 	@Override
 	public void deleteProduct(Integer id) {
 		
@@ -99,5 +105,59 @@ public class ProductosServiceImpl implements IProductosService {
 		productosModel.setCategoriaId(categoriasModel);
 		
 		return productosModel;
+	}
+
+	@Override
+	public ProductosModel saveProductUploadImage(ProductosModel productosModel, MultipartFile file, String nombreImagen)
+			throws IOException {
+			
+		CategoriasModel categoriasModel = new CategoriasModel();
+		categoriasModel.setId(productosModel.getCategoriaId().getId());
+		
+		productosModel.setCategoriaId(categoriasModel);
+		
+		/*
+		ImageDataModel imageDataModel = this.iImageDataRepository.save(ImageDataModel.builder()
+				.name(nombreImagen)
+				.type(file.getContentType())
+				.imageData(ImageUtils.compressImage(file.getBytes()))
+				.build());
+		
+		return imageDataModel;
+		*/
+		
+		ProductosModel productosModelResult = this.iProductosRepository.save(ProductosModel.builder()
+				.categoriaId(categoriasModel)
+				.nombre(productosModel.getNombre())
+				.slug(Utilidades.getSlug(productosModel.getNombre()))
+				.descripcion(productosModel.getDescripcion())
+				.precio(productosModel.getPrecio())
+				.nombreFoto(nombreImagen)
+				.tipoFoto(file.getContentType())
+				.imageData(ImageUtils.compressImage(file.getBytes()))
+				.build());
+		
+		return productosModelResult;				
+	}
+
+	@Override
+	public ProductosModel saveProductImage(String nombre, String descripcion, int precio, int categoria,
+			MultipartFile file, String nombreImagen) throws IOException {
+		
+		CategoriasModel categoriasModel = new CategoriasModel();
+		categoriasModel.setId(categoria);		
+		
+		ProductosModel productosModelResult = this.iProductosRepository.save(ProductosModel.builder()
+				.categoriaId(categoriasModel)
+				.nombre(nombre)
+				.slug(Utilidades.getSlug(nombre))
+				.descripcion(descripcion)
+				.precio(precio)
+				.nombreFoto(nombreImagen)
+				.tipoFoto(file.getContentType())
+				.imageData(ImageUtils.compressImage(file.getBytes()))
+				.build());
+		
+		return productosModelResult;	
 	}	
 }

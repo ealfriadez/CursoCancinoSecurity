@@ -19,15 +19,14 @@ public class ImageDataServiceImpl implements IImageDataService{
 	
 	private IImageDataRepository iImageDataRepository;
 		
-	public ImageDataModel uploadImage(MultipartFile file) throws IOException {
+	public ImageDataModel uploadImage(MultipartFile file, String nombreImagen) throws IOException {
 		
 		ImageDataModel imageDataModel = this.iImageDataRepository.save(ImageDataModel.builder()
-				.name(file.getOriginalFilename())
+				.name(nombreImagen)
 				.type(file.getContentType())
 				.imageData(ImageUtils.compressImage(file.getBytes()))
 				.build());
 		
 		return imageDataModel;
 	}
-
 }

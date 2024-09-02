@@ -8,5 +8,5 @@ import pe.edu.unfv.persistence.entity.model.ImageDataModel;
 
 public interface IImageDataService {
 
-	ImageDataModel uploadImage(MultipartFile file) throws IOException;
+	ImageDataModel uploadImage(MultipartFile file, String nombreImagen) throws IOException;
 }

@@ -3,7 +3,6 @@ package pe.edu.unfv.controller;
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -14,20 +13,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import pe.edu.unfv.controller.dto.ResponseNew;
+import pe.edu.unfv.persistence.dto.CategoryDTO;
 import pe.edu.unfv.persistence.dto.ProductDTO;
-import pe.edu.unfv.persistence.entity.model.ImageDataModel;
 import pe.edu.unfv.persistence.entity.model.ProductosModel;
 import pe.edu.unfv.service.implement.CategoriasServiceImpl;
 import pe.edu.unfv.service.implement.ImageDataServiceImpl;
 import pe.edu.unfv.service.implement.ProductosServiceImpl;
-import pe.edu.unfv.util.Constantes;
 import pe.edu.unfv.util.Utilidades;
 
 @RestController
@@ -38,9 +35,6 @@ public class ProductsController {
 	private ProductosServiceImpl productosServiceImpl;
 	private CategoriasServiceImpl categoriasServiceImpl;
 	private ImageDataServiceImpl imageDataServiceImpl;
-
-	// @Value("${elio.valores.ruta_upload}")
-	// private String ruta_upload;
 
 	@GetMapping("/products")
 	public List<ProductosModel> prudcts() {
@@ -66,73 +60,89 @@ public class ProductsController {
 	}
 
 	@PostMapping("/products")
-	public ResponseEntity<?> uploadImage(@Valid @RequestParam("image") MultipartFile file) throws IOException {
-		
-		ImageDataModel imageDataModel = this.imageDataServiceImpl.uploadImage(file);
+	public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
 
-		if (imageDataModel == null) {
-			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST, "Image not upload exists errors.");
+		if (file.isEmpty()) {
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
+					"The photo submitted is not valid, it must be JPG|PNG.");
 		}
 
-		return Utilidades.generateResponse(HttpStatus.CREATED, "Image upload successfully.");
-	}
+		String nombreImagen = Utilidades.guardarArchivo(file, null);
+		if (nombreImagen == "no" || nombreImagen == null) {
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
+					"The photo submitted is not valid, it must be JPG|PNG.");
+		}
 
-	/*
-	 * @PostMapping(value = "/products", consumes = {"multipart/form-data"}) public
-	 * ResponseEntity<?> createProduct(@Valid @RequestBody ProductDTO productDTO,
-	 * BindingResult result, @RequestParam("file") MultipartFile file){
-	 * 
-	 * if (result.hasErrors()) { String firstErrorMessage =
-	 * result.getAllErrors().stream() .map(ObjectError::getDefaultMessage)
-	 * .findFirst() .orElse("Unknown validation error"); return new
-	 * ResponseEntity<>(new ResponseNew(firstErrorMessage), HttpStatus.BAD_REQUEST);
-	 * }
-	 * 
-	 * if (this.productosServiceImpl.existsProductByName(productDTO.getNombre())) {
-	 * 
-	 * return Utilidades.generateResponse(HttpStatus.CONFLICT,
-	 * "Product name already exists. Please choose another name."); }
-	 * 
-	 * if(!this.categoriasServiceImpl.existsCategoryById(productDTO.getCategoriaId()
-	 * )) {
-	 * 
-	 * return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
-	 * "The specified product category does not exist. Please verify the entered data."
-	 * ); }
-	 * 
-	 * if(!file.isEmpty()) { HttpStatus status = HttpStatus.OK; String mensaje ="";
-	 * 
-	 * String nombreImagen = Utilidades.guardarArchivo(file, Constantes.RUTA_UPLOAD
-	 * +"producto/"); if(nombreImagen=="no") { return
-	 * Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
-	 * "La foto enviada no es válida, debe ser JPG|PNG."); }else {
-	 * if(nombreImagen!=null) { //producto.setFoto(nombreImagen);
-	 * 
-	 * //this.productosServiceImpl.saveProduct(producto);
-	 * 
-	 * return Utilidades.generateResponse(HttpStatus.CREATED,
-	 * "Product created successfully."); } } }else { return
-	 * Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
-	 * "La foto enviada no es válida, debe ser JPG|PNG."); }
-	 * 
-	 * 
-	 *//**********************
-		* 
-		*//*
-			 * 
-			 * try {
-			 * 
-			 * //String nombreImagen = Utilidades.guardarArchivo(file, this.ruta_upload
-			 * +"producto2/");
-			 * 
-			 * 
-			 * this.productosServiceImpl.saveProduct(productDTO); return
-			 * Utilidades.generateResponse(HttpStatus.CREATED,
-			 * "Product created successfully."); } catch (Exception e) {
-			 * 
-			 * return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-			 * "Error registering category: " + e.getMessage()); } }
-			 */
+		try {
+			this.imageDataServiceImpl.uploadImage(file, nombreImagen);
+			return Utilidades.generateResponse(HttpStatus.CREATED, "Image upload successfully.");
+		} catch (Exception e) {
+			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error in the image upload: " + e.getMessage());
+		}
+	}
+	
+	@PostMapping("/products/A")
+	public ResponseEntity<?> uploadImageX(@RequestParam("image") MultipartFile file) throws IOException {
+		
+		if (file.isEmpty()) {
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
+					"The photo submitted is not valid, it must be JPG|PNG.");
+		}
+
+		String nombreImagen = Utilidades.guardarArchivo(file, null);
+		if (nombreImagen == "no" || nombreImagen == null) {
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
+					"The photo submitted is not valid, it must be JPG|PNG.");
+		}
+
+		try {
+			this.imageDataServiceImpl.uploadImage(file, nombreImagen);
+			return Utilidades.generateResponse(HttpStatus.CREATED, "Image upload successfully.");
+		} catch (Exception e) {
+			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error in the image upload: " + e.getMessage());
+		}
+	}
+	
+	@SuppressWarnings("static-access")
+	@PostMapping("/products/B")
+	public ResponseEntity<?> saveProductUploadImage(
+			@RequestParam("nombre") String nombre,
+			@RequestParam("descripcion") String descripcion,
+			@RequestParam("precio") int precio,
+			@RequestParam("categoria") int categoria,
+			@RequestParam("image") MultipartFile file) 
+			throws IOException {			
+		
+		if (nombre.isEmpty() || descripcion.isEmpty() || precio == 0 || categoria == 0 || file.isEmpty()) {
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
+					"One or more fields are required to register the product, please review it.");
+		}
+		
+		if (file.isEmpty()) {
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
+					"The photo submitted is not valid, it must be JPG|PNG.");
+		}
+		
+		String nombreImagen = Utilidades.guardarArchivo(file, null);
+		if (nombreImagen == "no" || nombreImagen == null) {
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
+					"The photo submitted is not valid, it must be JPG|PNG.");
+		}		
+
+		try {
+			
+			this.productosServiceImpl.saveProductImage(nombre, descripcion, precio, categoria, file, nombreImagen).builder().build();
+			return Utilidades.generateResponse(HttpStatus.CREATED, "Image upload successfully.");
+			
+		} catch (Exception e) {
+			
+			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error in the image upload: " + e.getMessage());
+		}		
+	}	
+
 	/*
 	 * @PutMapping("/{id}") public ResponseEntity<?>
 	 * updateCategory(@PathVariable("id") int id, @Valid @RequestBody CategoryDTO
@@ -191,49 +201,40 @@ public class ProductsController {
 	 */
 
 	/*
-	 * @PostMapping("/products") public ResponseEntity<?>
-	 * createProduct(@Valid @RequestBody ProductDTO productDTO, BindingResult
-	 * result, @RequestParam("file") MultipartFile file){ if (result.hasErrors()) {
-	 * String firstErrorMessage = result.getAllErrors().stream()
-	 * .map(ObjectError::getDefaultMessage) .findFirst()
-	 * .orElse("Unknown validation error"); return new ResponseEntity<>(new
-	 * ResponseNew(firstErrorMessage), HttpStatus.BAD_REQUEST); }
-	 * 
-	 * if (this.productosServiceImpl.existsProductByName(productDTO.getNombre())) {
-	 * 
-	 * return Utilidades.generateResponse(HttpStatus.CONFLICT,
-	 * "Product name already exists. Please choose another name."); }
-	 * 
-	 * if(!this.categoriasServiceImpl.existsCategoryById(productDTO.getCategoriaId()
-	 * )) {
-	 * 
-	 * return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
-	 * "The specified product category does not exist. Please verify the entered data."
-	 * ); }
-	 * 
-	 * if(!file.isEmpty()) { HttpStatus status = HttpStatus.OK; String mensaje ="";
-	 * 
-	 * String nombreImagen = Utilidades.guardarArchivo(file, this.ruta_upload
-	 * +"producto2/"); if(nombreImagen=="no") { status = HttpStatus.BAD_REQUEST;
-	 * mensaje ="La foto enviada no es válida, debe ser JPG|PNG"; }else {
-	 * if(nombreImagen!=null) { producto.setFoto(nombreImagen);
-	 * 
-	 * this.productosServiceImpl.saveProduct(producto);
-	 * 
-	 * status= HttpStatus.CREATED; mensaje="Se creó el registro exitosamente"; } }
-	 * }else { status = HttpStatus.BAD_REQUEST; mensaje
-	 * ="La foto enviada no es válida, debe ser JPG|PNG"; }
-	 * 
-	 * 
-	 * 
-	 * 
-	 * try {
-	 * 
-	 * this.productosServiceImpl.saveProduct(productDTO); return
-	 * Utilidades.generateResponse(HttpStatus.CREATED,
-	 * "Product created successfully."); } catch (Exception e) {
-	 * 
-	 * return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-	 * "Error registering category: " + e.getMessage()); } }
-	 */
+	@PostMapping("/products")
+	public ResponseEntity<?> createProduct(
+			@Valid @RequestBody ProductosModel productModel, 
+			BindingResult result,
+			@RequestParam("image") MultipartFile file) throws IOException {
+		
+		
+		if (result.hasErrors()) {
+			String firstErrorMessage = result.getAllErrors().stream().map(ObjectError::getDefaultMessage).findFirst()
+					.orElse("Unknown validation error");
+			return new ResponseEntity<>(new ResponseNew(firstErrorMessage), HttpStatus.BAD_REQUEST);
+		}
+
+		if (this.productosServiceImpl.existsProductByName(productDTO.getNombre())) {
+
+			return Utilidades.generateResponse(HttpStatus.CONFLICT,
+					"Product name already exists. Please choose another name.");
+		}
+
+		if (!this.categoriasServiceImpl.existsCategoryById(productDTO.getCategoriaId())) {
+
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
+					"The specified product category does not exist. Please verify the entered data.");
+		}		
+
+		try {
+
+			this.productosServiceImpl.saveProduct(productDTO);
+			return Utilidades.generateResponse(HttpStatus.CREATED, "Product created successfully.");
+		} catch (Exception e) {
+
+			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error registering category: " + e.getMessage());
+		}
+	}*/
+
 }

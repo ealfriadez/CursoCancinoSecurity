@@ -23,13 +23,16 @@ public class Utilidades {
 		}else {
 			long time = System.currentTimeMillis();
 			String nombre = time + Utilidades.getExtension(multipartFile.getContentType());
-			try {
-				File imageFile = new File(ruta+nombre);
-				multipartFile.transferTo(imageFile);
-				return nombre;
-			} catch (IOException e) {
-				return null;
-			}
+			return nombre;
+			
+			//try {
+				//File imageFile = new File(ruta+nombre);
+				//File imageFile = new File(nombre);
+				//multipartFile.transferTo(imageFile);
+				//return nombre;
+			//} catch (IOException e) {
+				//return null;
+			//}
 		}
 	}
 	
