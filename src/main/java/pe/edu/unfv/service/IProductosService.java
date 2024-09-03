@@ -20,16 +20,7 @@ public interface IProductosService {
 	ProductDTO saveProduct(ProductDTO productDTO);
 	void saveProductoModel(ProductosModel productosModel);
 	
-	ProductosModel saveProductUploadImage(ProductosModel productosModel, MultipartFile file, String nombreImagen) throws IOException;
-	
 	ProductosModel saveProductImage(String nombre, String descripcion, int precio, int categoria, MultipartFile file, String nombreImagen) throws IOException;
 	
-	/*
-	
-	boolean existsCategoryByNameExcludingId(String name, int id);	
-	CategoriasModel getCategoryModelById(int id);
-	CategoryDTO getCategoryById(Integer id);
-	void saveCategoryModel(CategoriasModel categoriasModel);
-	void deleteCategory(int id);
-	*/
+	byte[] downloadImage(String nombreImagen);
 }

@@ -88,7 +88,7 @@ public class CategorysController {
         }
 		
 		if (this.categoriasServiceImpl.getCategoryModelById(id) == null) {
-			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, "Category with id: ".concat(id +" does not exist 111"));
+			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, "Category with id: ".concat(id +" does not exist"));
 		}		
 		
 		CategoryDTO existingCategory = this.categoriasServiceImpl.getCategoryById(id);

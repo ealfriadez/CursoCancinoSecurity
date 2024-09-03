@@ -1,5 +1,8 @@
 package pe.edu.unfv.persistence.entity.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,6 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "productos")
 @Builder
+@JsonPropertyOrder({"id", "nombre", "descripcion", "slug", "precio", "tipoFoto", "nombreFoto"})
 public class ProductosModel {
 
 	@Id
@@ -34,12 +38,11 @@ public class ProductosModel {
 	
 	private int precio;
 	
-	//private String foto;
-	
 	private String nombreFoto;
 
 	private String tipoFoto;
 
+	@JsonIgnore
 	@Lob
 	@Column(name="imageData")
 	private byte[] imageData;

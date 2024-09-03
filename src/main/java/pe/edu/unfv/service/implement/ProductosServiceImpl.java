@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.AllArgsConstructor;
 import pe.edu.unfv.persistence.dto.ProductDTO;
 import pe.edu.unfv.persistence.entity.model.CategoriasModel;
-import pe.edu.unfv.persistence.entity.model.ImageDataModel;
 import pe.edu.unfv.persistence.entity.model.ProductosModel;
 import pe.edu.unfv.persistence.repository.IProductosRepository;
 import pe.edu.unfv.service.IProductosService;
@@ -108,39 +107,6 @@ public class ProductosServiceImpl implements IProductosService {
 	}
 
 	@Override
-	public ProductosModel saveProductUploadImage(ProductosModel productosModel, MultipartFile file, String nombreImagen)
-			throws IOException {
-			
-		CategoriasModel categoriasModel = new CategoriasModel();
-		categoriasModel.setId(productosModel.getCategoriaId().getId());
-		
-		productosModel.setCategoriaId(categoriasModel);
-		
-		/*
-		ImageDataModel imageDataModel = this.iImageDataRepository.save(ImageDataModel.builder()
-				.name(nombreImagen)
-				.type(file.getContentType())
-				.imageData(ImageUtils.compressImage(file.getBytes()))
-				.build());
-		
-		return imageDataModel;
-		*/
-		
-		ProductosModel productosModelResult = this.iProductosRepository.save(ProductosModel.builder()
-				.categoriaId(categoriasModel)
-				.nombre(productosModel.getNombre())
-				.slug(Utilidades.getSlug(productosModel.getNombre()))
-				.descripcion(productosModel.getDescripcion())
-				.precio(productosModel.getPrecio())
-				.nombreFoto(nombreImagen)
-				.tipoFoto(file.getContentType())
-				.imageData(ImageUtils.compressImage(file.getBytes()))
-				.build());
-		
-		return productosModelResult;				
-	}
-
-	@Override
 	public ProductosModel saveProductImage(String nombre, String descripcion, int precio, int categoria,
 			MultipartFile file, String nombreImagen) throws IOException {
 		
@@ -159,5 +125,14 @@ public class ProductosServiceImpl implements IProductosService {
 				.build());
 		
 		return productosModelResult;	
+	}
+
+	@Override
+	public byte[] downloadImage(String nombreImagen) {
+		
+		Optional<ProductosModel> imageFromDb = this.iProductosRepository.findProductosModelByNombreFoto(nombreImagen);
+        byte[] imageInbytes = ImageUtils.decompressImage(imageFromDb.get().getImageData());
+        
+        return imageInbytes;
 	}	
 }
