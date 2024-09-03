@@ -23,11 +23,11 @@ import lombok.AllArgsConstructor;
 import pe.edu.unfv.controller.dto.AuthCreateUserRequest;
 import pe.edu.unfv.controller.dto.AuthLoginRequest;
 import pe.edu.unfv.controller.dto.AuthResponse;
-import pe.edu.unfv.persistence.entity.RoleEntity;
-import pe.edu.unfv.persistence.entity.UserEntity;
-import pe.edu.unfv.persistence.repository.RoleRepository;
-import pe.edu.unfv.persistence.repository.UserRepository;
-import pe.edu.unfv.util.JwtUtils;
+import pe.edu.unfv.persistence.entity.security.RoleEntity;
+import pe.edu.unfv.persistence.entity.security.UserEntity;
+import pe.edu.unfv.persistence.repository.security.RoleRepository;
+import pe.edu.unfv.persistence.repository.security.UserRepository;
+import pe.edu.unfv.util.security.JwtUtils;
 
 @Service
 @Primary

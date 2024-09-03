@@ -1,4 +1,4 @@
-package pe.edu.unfv.util;
+package pe.edu.unfv.util.security;
 
 import java.util.Date;
 import java.util.Map;

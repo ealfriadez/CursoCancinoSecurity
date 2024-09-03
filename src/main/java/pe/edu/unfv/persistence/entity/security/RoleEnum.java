@@ -1,4 +1,4 @@
-package pe.edu.unfv.persistence.entity;
+package pe.edu.unfv.persistence.entity.security;
 
 public enum RoleEnum {
 

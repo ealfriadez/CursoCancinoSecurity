@@ -1,4 +1,4 @@
-package pe.edu.unfv.persistence.entity;
+package pe.edu.unfv.persistence.entity.security;
 
 import java.util.HashSet;
 import java.util.Set;

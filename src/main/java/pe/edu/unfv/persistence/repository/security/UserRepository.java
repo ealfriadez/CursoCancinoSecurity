@@ -1,11 +1,11 @@
-package pe.edu.unfv.persistence.repository;
+package pe.edu.unfv.persistence.repository.security;
 
 import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import pe.edu.unfv.persistence.entity.UserEntity;
+import pe.edu.unfv.persistence.entity.security.UserEntity;
 
 
 @Repository

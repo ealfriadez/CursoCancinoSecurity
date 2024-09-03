@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import lombok.AllArgsConstructor;
 import pe.edu.unfv.security.filter.JwtTokenValidator;
-import pe.edu.unfv.util.JwtUtils;
+import pe.edu.unfv.util.security.JwtUtils;
 
 @Configuration
 @EnableWebSecurity
@@ -44,12 +44,22 @@ public class Seguridad {
 					//Configurar los endpoints publicos
 					//http.requestMatchers(HttpMethod.GET, "/method/get").permitAll();
 					http.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
+					http.requestMatchers(HttpMethod.GET, "/v1/categorys/**").permitAll();
+					http.requestMatchers(HttpMethod.GET, "/v1/products/**").permitAll();
 					
 					//Configurar los endpoints privados
 					//http.requestMatchers(HttpMethod.POST, "/api/v1/post").hasAnyAuthority("CREATE", "READ");
 					http.requestMatchers(HttpMethod.POST, "/method/post").hasAnyRole("ADMIN", "DEVELOPER");
 					http.requestMatchers(HttpMethod.PATCH, "/method/patch").hasAnyAuthority("REFACTOR");
 					http.requestMatchers(HttpMethod.GET, "/method/get").hasAnyRole("INVITED");
+					
+					http.requestMatchers(HttpMethod.POST, "/v1/").hasAnyRole("ADMIN", "DEVELOPER");
+					http.requestMatchers(HttpMethod.PUT, "/v1/{id}").hasAnyRole("ADMIN", "DEVELOPER");
+					http.requestMatchers(HttpMethod.DELETE, "/v1/{id}").hasAnyRole("ADMIN", "DEVELOPER");
+					
+					http.requestMatchers(HttpMethod.POST, "/v1/products/**").hasAnyRole("ADMIN", "DEVELOPER");
+					http.requestMatchers(HttpMethod.PUT, "/v1/products/**").hasAnyRole("ADMIN", "DEVELOPER");
+					http.requestMatchers(HttpMethod.DELETE, "/v1/products/**").hasAnyRole("ADMIN", "DEVELOPER");
 				
 					//Confifurar el resto de endpoints - NO ESPECIFICADOS
 					http.anyRequest().denyAll();
