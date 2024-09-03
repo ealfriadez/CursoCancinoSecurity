@@ -5,22 +5,15 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import pe.edu.unfv.controller.dto.ResponseNew;
-import pe.edu.unfv.persistence.dto.CategoryDTO;
-import pe.edu.unfv.persistence.dto.ProductDTO;
 import pe.edu.unfv.persistence.entity.model.ProductosModel;
 import pe.edu.unfv.service.implement.CategoriasServiceImpl;
 import pe.edu.unfv.service.implement.ImageDataServiceImpl;
@@ -115,29 +108,31 @@ public class ProductsController {
 			@RequestParam("image") MultipartFile file) 
 			throws IOException {			
 		
-		if (nombre.isEmpty() || descripcion.isEmpty() || precio == 0 || categoria == 0 || file.isEmpty()) {
-			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
-					"One or more fields are required to register the product, please review it.");
+		if (this.productosServiceImpl.existsProductByName(nombre)) {            
+            return Utilidades.generateResponse(HttpStatus.CONFLICT, "Product name already exists. Please choose another name.");
+        }
+		
+		if (nombre.isEmpty() || descripcion.isEmpty() || precio <= 0 || categoria <= 0) {
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST, "One or more fields are required to register the product, please review it.");
+		}
+		
+		if (!this.categoriasServiceImpl.existsCategoryById(categoria)) {			
+			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, "Category with id: ".concat(categoria +" does not exist"));
 		}
 		
 		if (file.isEmpty()) {
-			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
-					"The photo submitted is not valid, it must be JPG|PNG.");
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST, "The photo submitted is not valid, it must be JPG|PNG.");
 		}
 		
 		String nombreImagen = Utilidades.guardarArchivo(file, null);
 		if (nombreImagen == "no" || nombreImagen == null) {
-			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST,
-					"The photo submitted is not valid, it must be JPG|PNG.");
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST, "The photo submitted is not valid, it must be JPG|PNG.");
 		}		
 
-		try {
-			
+		try {			
 			this.productosServiceImpl.saveProductImage(nombre, descripcion, precio, categoria, file, nombreImagen).builder().build();
-			return Utilidades.generateResponse(HttpStatus.CREATED, "Image upload successfully.");
-			
-		} catch (Exception e) {
-			
+			return Utilidades.generateResponse(HttpStatus.CREATED, "Image upload successfully.");			
+		} catch (Exception e) {			
 			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error in the image upload: " + e.getMessage());
 		}		
