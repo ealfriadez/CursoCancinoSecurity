@@ -24,7 +24,8 @@ public class CategoriasServiceImpl implements ICategoriasService{
 	@Override
 	public List<CategoriasModel> getAllCategorys() {
 		
-		return this.iCategoriasRepository.findAll(Sort.by("id").descending());
+		return this.iCategoriasRepository.findAll();
+		//return this.iCategoriasRepository.findAll(Sort.by("id").descending());
 	}
 
 	@Override
@@ -85,7 +86,7 @@ public class CategoriasServiceImpl implements ICategoriasService{
 		return this.iCategoriasRepository.findCategoriasModelByNombreAndIdNot(name, id).isPresent();
 	}	
 	
-	private CategoryDTO convertCategoryToDTO(CategoriasModel categoriasModel) {
+	public CategoryDTO convertCategoryToDTO(CategoriasModel categoriasModel) {
 		
 		CategoryDTO categoryDTO = new CategoryDTO();
 		categoryDTO.setNombre(categoriasModel.getNombre());	
@@ -94,7 +95,7 @@ public class CategoriasServiceImpl implements ICategoriasService{
 		return categoryDTO;
 	}
 	
-	private CategoriasModel convertCategoryToEntity(CategoryDTO categoryDTO) {
+	public CategoriasModel convertCategoryToEntity(CategoryDTO categoryDTO) {
 		
 		CategoriasModel category = new CategoriasModel();
         category.setNombre(categoryDTO.getNombre());
