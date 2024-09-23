@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
@@ -275,12 +274,46 @@ class CategoriasServiceImplTest {
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
 		verify(this.iCategoriasRepository).existsCategoryByNombre(name);
 	}
-	/**
-	 * *
-	 * 
-	 * @Test void testExistsCategoryByNameExcludingId() { fail("Not yet
-	 *       implemented"); }
-	 * 
-	 * @Test void testCategoriasServiceImpl() { fail("Not yet implemented"); }
-	 */
+
+	@Test
+	void testExistsCategoryByNameExcludingId() {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String name = "Penelope";
+		int id = 7;
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		Mockito.when(this.iCategoriasRepository.findCategoriasModelByNombreAndIdNot(name, id)).thenReturn(DataProvider.categoriasOptionalModelMock());
+		boolean result = this.categoriasServiceImpl.existsCategoryByNameExcludingId(name, id);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertTrue(result);
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.iCategoriasRepository).findCategoriasModelByNombreAndIdNot(name, id);
+	}
+	
+	@Test
+	void testNotExistsCategoryByNameExcludingId() {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String name = "Penelope";
+		int id = 7;
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		Mockito.when(this.iCategoriasRepository.findCategoriasModelByNombreAndIdNot(name, id)).thenReturn(DataProvider.categoriasOptionalEmptyModelMock());
+		boolean result = this.categoriasServiceImpl.existsCategoryByNameExcludingId(name, id);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertFalse(result);
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.iCategoriasRepository).findCategoriasModelByNombreAndIdNot(name, id);
+	}
 }
