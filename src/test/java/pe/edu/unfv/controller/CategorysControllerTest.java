@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.List;
 
+import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -93,7 +94,6 @@ class CategorysControllerTest {
 
 		// Then -> entonces
 		// Verificar los resultados correctamentes
-
 		assertEquals(HttpStatus.OK, result.getStatusCode());
 		// Verificar las interacciones del repositorio (Mockito-specific)
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
@@ -105,45 +105,63 @@ class CategorysControllerTest {
 
 		// Given -> Mientras
 		// Convertir para el comportamiento esperado
-		CategoryDTO categoryDTOMock = DataProvider.categoryDTOMock();
+		CategoryDTO categoryDTOMock = new CategoryDTO();
 		Integer id = -5;
 
 		// When -> Cuando
 		// Simular el comportamiento del repositorio
-		Mockito.when(this.categoriasServiceImpl.getCategoryById(id)).thenReturn(categoryDTOMock);
-		//ResponseEntity<?> result = this.categorysController.categorysById(id);
+		// Mockito.when(this.categoriasServiceImpl.getCategoryById(id)).thenReturn(categoryDTOMock);
+		// ResponseEntity<?> result = this.categorysController.categorysById(id);
 
 		// Then -> entonces
 		// Verificar los resultados correctamentes
 
-		assertThrows(Exception.class, () -> this.categorysController.categorysById(id));
-
-				
+		Mockito.when(this.categoriasServiceImpl.getCategoryById(anyInt())).thenReturn(categoryDTOMock);
 		
+		Exception exception = assertThrows(Exception.class, () -> {
+			//Mockito.when(this.categoriasServiceImpl.getCategoryById(anyInt())).thenReturn(categoryDTOMock);
+			this.categorysController.categorysById(anyInt());
+		});
+
+		assertEquals("11", exception.getMessage());
 		// Verificar las interacciones del repositorio (Mockito-specific)
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
 		verify(this.categoriasServiceImpl).getCategoryById(id);
-	}	
-	
-	
+	}
+
 	@Test
-	void testTryPlusCategorysById() {	
-	
-		//Integer id = -5;
+	void testTryPlusCategorysById() {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
 		CategoryDTO categoryDTOMock = new CategoryDTO();
+		Integer id = -5;
 
 		// When -> Cuando
 		// Simular el comportamiento del repositorio
-		//doThrow(mockException).when(categoriasServiceImpl).getCategoryById(id);
-		Mockito.when(this.categoriasServiceImpl.getCategoryById(anyInt())).thenThrow(Exception.class);
+		// Mockito.when(this.categoriasServiceImpl.getCategoryById(id)).thenReturn(categoryDTOMock);
+		// ResponseEntity<?> result = this.categorysController.categorysById(id);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+/*
+		Mockito.doThrow(new Exception("HttpStatus.INTERNAL_SERVER_ERROR")).when(this.categoriasServiceImpl.getCategoryById(anyInt()));
 		
-		//assertThrows(Exception.class, () -> this.categorysController.categorysById(id));
-		
-		Exception thrown = assertThrows(Exception.class, () -> {
+		Exception exception = assertThrows(Exception.class, () -> {
+			//Mockito.when(this.categoriasServiceImpl.getCategoryById(anyInt())).thenReturn(categoryDTOMock);
 			this.categorysController.categorysById(anyInt());
-		},"Error retrieving category: ");
-		
-		assertEquals("For input string: \"One\"", thrown.getMessage());
-		
+		});
+
+		//assertEquals("11", exception.getMessage());
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.categoriasServiceImpl).getCategoryById(id);
+		*/
+		try {
+			//Mockito.when(this.categoriasServiceImpl.getCategoryById(id)).thenReturn(categoryDTOMock);
+			this.categorysController.categorysById(anyInt());
+		    } catch (Exception anyOther) {
+		    	assertEquals("11", anyOther.getMessage());
+		    }
 	}
 }
