@@ -33,7 +33,14 @@ public class DataProvider {
 		
 		//System.out.println(" -> Obteniendo CategoryDTO / Mock");
 		
-		return new CategoryDTO("Milan", "Delantero");
+		return new CategoryDTO("Virgil van Dijk", "Liverpool");
+	}
+	
+	public static CategoryDTO categoryEmptyDTOMock(){
+		
+		//System.out.println(" -> Obteniendo CategoryDTO / Mock");
+		
+		return new CategoryDTO();
 	}
 	
 	public static CategoriasModel categoriasModelMock(){

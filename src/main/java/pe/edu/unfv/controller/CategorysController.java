@@ -46,7 +46,7 @@ public class CategorysController {
 		try {
 			CategoryDTO categoryDTO = this.categoriasServiceImpl.getCategoryById(id);
 			return ResponseEntity.ok(categoryDTO);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving category: " + e.getMessage());			
 		}		
 	}
