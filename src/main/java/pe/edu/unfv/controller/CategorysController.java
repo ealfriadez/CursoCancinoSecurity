@@ -93,7 +93,11 @@ public class CategorysController {
 		
 		CategoryDTO existingCategory = this.categoriasServiceImpl.getCategoryById(id);
 		
-		if(categoryDTO.getNombre() != null && !categoryDTO.getNombre().equals(existingCategory.getNombre()) && this.categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTO.getNombre(), id)) {
+		if(categoryDTO.getNombre() != null 
+				&& 
+				!categoryDTO.getNombre().equals(existingCategory.getNombre()) 
+				&& 
+				this.categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTO.getNombre(), id)) {
 			
 			return Utilidades.generateResponse(HttpStatus.CONFLICT, "Category name already exists. Please choose another name."); 
 		}
