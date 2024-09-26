@@ -6,9 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
+
+import javax.naming.Binding;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +21,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 
+import pe.edu.unfv.controller.dto.ResponseNew;
+import pe.edu.unfv.persistence.dto.CategoryDTO;
 import pe.edu.unfv.persistence.entity.model.CategoriasModel;
 import pe.edu.unfv.service.implement.CategoriasServiceImpl;
 import pe.edu.unfv.service.implement.DataProvider;
@@ -108,12 +114,13 @@ class CategorysControllerTest {
 		// When -> Cuando
 		// Simular el comportamiento del repositorio
 		Mockito.when(this.categoriasServiceImpl.existsCategoryById(id)).thenReturn(true);	
-		Mockito.when(this.categoriasServiceImpl.getCategoryById(id)).thenReturn(DataProvider.categoryDTOMock());	
+		//Mockito.when(this.categoriasServiceImpl.getCategoryById(id)).thenReturn(DataProvider.categoryDTOMock());	
 		ResponseEntity<?> result = this.categorysController.categorysById(id);
 
 		// Then -> entonces
 		// Verificar los resultados correctamentes
 		assertEquals(HttpStatus.OK, result.getStatusCode());
+		
 		// Verificar las interacciones del repositorio (Mockito-specific)
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
 		verify(this.categoriasServiceImpl).existsCategoryById(id);
@@ -121,7 +128,7 @@ class CategorysControllerTest {
 	}
 	
 	@Test
-	void testCategorysByIdCatch_() {
+	void testCategorysByIdCatch() {
 
 		// Given -> Mientras
 		// Convertir para el comportamiento esperado
@@ -129,33 +136,52 @@ class CategorysControllerTest {
 
 		// When -> Cuando
 		// Simular el comportamiento del repositorio
-		Mockito.when(this.categoriasServiceImpl.existsCategoryById(id)).thenReturn(true);	
-		//Mockito.when(this.categoriasServiceImpl.getCategoryById(id)).thenReturn(DataProvider.categoryEmptyDTOMock());	
-		Mockito.doThrow(new RuntimeException("Error al obtener categoría 11")).when(this.categoriasServiceImpl).getCategoryById(id);
-		
-		//ResponseEntity<?> result = this.categorysController.categorysById(id);
-		//Mockito.doThrow(Exception.class).when(this.categoriasServiceImpl.getCategoryById(anyInt()));
-		//Mockito.doThrow(Exception.class).when(this.categorysController).categorysById(Mockito.anyInt());
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(id)).thenReturn(true);			
+		Mockito.doThrow(new RuntimeException("Error al obtener categoría")).when(this.categoriasServiceImpl).getCategoryById(id);
+		ResponseEntity<?> result = this.categorysController.categorysById(id);
 		
 		// Then -> entonces
-		// Verificar los resultados correctamentes
-		//assertEquals(HttpStatus.OK, result.getStatusCode());
+		// Verificar los resultados correctamentes		
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+		
 		// Verificar las interacciones del repositorio (Mockito-specific)
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
-		//verify(this.categoriasServiceImpl).existsCategoryById(id);
-		//verify(this.categoriasServiceImpl).getCategoryById(id);
-		
-		try {
-	        this.categorysController.categorysById(id);
-	        //fail("Se esperaba una excepción");
-	    } catch (Exception e) {
-	        // Then
-	        // Verificamos que se haya lanzado la excepción esperada
-	        assertTrue(e.getMessage().contains("Error al obtener categoría 22"));
+		verify(this.categoriasServiceImpl).existsCategoryById(id);
+        verify(this.categoriasServiceImpl).getCategoryById(id);        
+	}
+	
+	@Test
+	void testCreateCategory() {
 
-	        // Verificamos las interacciones con el servicio
-	        verify(this.categoriasServiceImpl).existsCategoryById(id);
-	        verify(this.categoriasServiceImpl).getCategoryById(id);
-	    }
+		// Arrange
+	   // CategoryDTO validCategoryDTO = new CategoryDTO();
+	    //validCategoryDTO.setNombre("ValidCategory");
+	    
+	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
+	    
+	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
+	    Mockito.when(this.categoriasServiceImpl.existsCategoryByName(anyString())).thenReturn(false);
+
+	    // Act
+	    ResponseEntity<?> response = this.categorysController.createCategory(DataProvider.categoryDTOMock(), mockBindingResult);
+
+	    // Assert
+	    assertEquals(HttpStatus.CREATED, response.getStatusCode());
+	}
+	
+	@Test
+	void testCreateCategoryHasError() {
+
+		// Arrange	    
+	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
+	    
+	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(true);
+	    Mockito.when(this.categoriasServiceImpl.existsCategoryByName(anyString())).thenReturn(false);
+
+	    // Act
+	    ResponseEntity<?> response = this.categorysController.createCategory(DataProvider.categoryDTOMock(), mockBindingResult);
+
+	    // Assert
+	    assertEquals(HttpStatus.CREATED, response.getStatusCode());
 	}
 }
