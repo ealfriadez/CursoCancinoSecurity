@@ -297,11 +297,12 @@ class CategorysControllerTest {
 		
 	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);	    
 	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
+	    Mockito.doThrow(new IllegalArgumentException("Error al crear categoría")).when(this.categoriasServiceImpl).saveCategoryModel(categoriasModelNew);
 	    //Mockito.when(categoriasServiceImpl.getCategoryModelById(anyInt())).thenReturn(categoriasModel);
 	    //Mockito.when(categoriasServiceImpl.getCategoryById(anyInt())).thenReturn(categoryDTO);
 	    //Mockito.when(categoriasServiceImpl.existsCategoryByNameExcludingId(any(), anyInt())).thenReturn(true);
-	    CategoryDTO categoryDTONew = this.categoriasServiceImpl.getCategoryById(categoriasModelNew.getId());
-	    Mockito.when(categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTONew.getNombre(), anyInt())).thenReturn(true);
+	    //CategoryDTO categoryDTONew = this.categoriasServiceImpl.getCategoryById(categoriasModelNew.getId());
+	    //Mockito.when(this.categoriasServiceImpl.existsCategoryByNameExcludingId(categoriasModelNew.getNombre(), id)).thenReturn(true);
 	    
 	    ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);	    
 	    
