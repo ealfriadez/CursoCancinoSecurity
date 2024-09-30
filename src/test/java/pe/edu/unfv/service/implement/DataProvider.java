@@ -50,6 +50,13 @@ public class DataProvider {
 		return null;
 	}
 	
+	public static CategoryDTO categoryDTONullMock(){
+		
+		//System.out.println(" -> Obteniendo CategoryDTO / Mock");
+		
+		return null;
+	}
+	
 	public static CategoriasModel categoriasModelMock(){
 		
 		//System.out.println(" -> Obteniendo CategoryDTO / Mock");

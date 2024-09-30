@@ -3,6 +3,7 @@ package pe.edu.unfv.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -10,20 +11,26 @@ import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import pe.edu.unfv.persistence.dto.CategoryDTO;
 import pe.edu.unfv.persistence.entity.model.CategoriasModel;
@@ -94,7 +101,7 @@ class CategorysControllerTest {
 
 		// When -> Cuando
 		// Simular el comportamiento del repositorio
-		Mockito.when(this.categoriasServiceImpl.existsCategoryById(id)).thenReturn(true);		
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(id)).thenReturn(true);
 		ResponseEntity<?> result = this.categorysController.categorysById(id);
 
 		// Then -> entonces
@@ -104,7 +111,7 @@ class CategorysControllerTest {
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
 		verify(this.categoriasServiceImpl).existsCategoryById(id);
 	}
-	
+
 	@Test
 	void testCategorysByIdTry() {
 
@@ -114,20 +121,20 @@ class CategorysControllerTest {
 
 		// When -> Cuando
 		// Simular el comportamiento del repositorio
-		Mockito.when(this.categoriasServiceImpl.existsCategoryById(id)).thenReturn(true);	
-		//Mockito.when(this.categoriasServiceImpl.getCategoryById(id)).thenReturn(DataProvider.categoryDTOMock());	
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(id)).thenReturn(true);
+		// Mockito.when(this.categoriasServiceImpl.getCategoryById(id)).thenReturn(DataProvider.categoryDTOMock());
 		ResponseEntity<?> result = this.categorysController.categorysById(id);
 
 		// Then -> entonces
 		// Verificar los resultados correctamentes
 		assertEquals(HttpStatus.OK, result.getStatusCode());
-		
+
 		// Verificar las interacciones del repositorio (Mockito-specific)
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
 		verify(this.categoriasServiceImpl).existsCategoryById(id);
 		verify(this.categoriasServiceImpl).getCategoryById(id);
 	}
-	
+
 	@Test
 	void testCategorysByIdCatch() {
 
@@ -137,175 +144,267 @@ class CategorysControllerTest {
 
 		// When -> Cuando
 		// Simular el comportamiento del repositorio
-		Mockito.when(this.categoriasServiceImpl.existsCategoryById(id)).thenReturn(true);			
-		Mockito.doThrow(new RuntimeException("Error al obtener categoría")).when(this.categoriasServiceImpl).getCategoryById(id);
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(id)).thenReturn(true);
+		Mockito.doThrow(new RuntimeException("Error al obtener categoría")).when(this.categoriasServiceImpl)
+				.getCategoryById(id);
 		ResponseEntity<?> result = this.categorysController.categorysById(id);
-		
+
 		// Then -> entonces
-		// Verificar los resultados correctamentes		
+		// Verificar los resultados correctamentes
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-		
+
 		// Verificar las interacciones del repositorio (Mockito-specific)
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
 		verify(this.categoriasServiceImpl).existsCategoryById(id);
-        verify(this.categoriasServiceImpl).getCategoryById(id);        
+		verify(this.categoriasServiceImpl).getCategoryById(id);
 	}
-	
+
 	@Test
 	void testCreateCategory() {
 
 		// Arrange
-	   // CategoryDTO validCategoryDTO = new CategoryDTO();
-	    //validCategoryDTO.setNombre("ValidCategory");
-	    
-	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
-	    
-	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
-	    Mockito.when(this.categoriasServiceImpl.existsCategoryByName(anyString())).thenReturn(false);
+		// CategoryDTO validCategoryDTO = new CategoryDTO();
+		// validCategoryDTO.setNombre("ValidCategory");
 
-	    // Act
-	    ResponseEntity<?> response = this.categorysController.createCategory(DataProvider.categoryDTOMock(), mockBindingResult);
+		BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
 
-	    // Assert
-	    assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
+		Mockito.when(this.categoriasServiceImpl.existsCategoryByName(anyString())).thenReturn(false);
+
+		// Act
+		ResponseEntity<?> response = this.categorysController.createCategory(DataProvider.categoryDTOMock(),
+				mockBindingResult);
+
+		// Assert
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 	}
-	
+
 	@Test
 	void testCreateCategoryHasError() {
 
-		// Arrange	    
-	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
-	    
-	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(true);
-	    
-	    Mockito.when(mockBindingResult.getAllErrors()).thenReturn(Collections.singletonList(new FieldError("categoryDTO", "nombre", "Invalid name")));
-	    // Act
-	    ResponseEntity<?> response = this.categorysController.createCategory(DataProvider.categoryDTOMock(), mockBindingResult);
+		// Arrange
+		BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
 
-	    // Assert
-	    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		Mockito.when(mockBindingResult.hasErrors()).thenReturn(true);
+
+		Mockito.when(mockBindingResult.getAllErrors())
+				.thenReturn(Collections.singletonList(new FieldError("categoryDTO", "nombre", "Invalid name")));
+		// Act
+		ResponseEntity<?> response = this.categorysController.createCategory(DataProvider.categoryDTOMock(),
+				mockBindingResult);
+
+		// Assert
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
-	
+
 	@Test
 	void testCreateCategoryDuplicateName() {
 
-		// Arrange	    
-	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
-	    
-	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
-	    Mockito.when(this.categoriasServiceImpl.existsCategoryByName(anyString())).thenReturn(true);
+		// Arrange
+		BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
 
-	    // Act
-	    ResponseEntity<?> response = this.categorysController.createCategory(DataProvider.categoryDTOMock(), mockBindingResult);
+		Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
+		Mockito.when(this.categoriasServiceImpl.existsCategoryByName(anyString())).thenReturn(true);
 
-	    // Assert
-	    assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+		// Act
+		ResponseEntity<?> response = this.categorysController.createCategory(DataProvider.categoryDTOMock(),
+				mockBindingResult);
+
+		// Assert
+		assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
 	}
-	
+
 	@Test
 	void testCreateCategoryTryCatch() {
 
-		// Arrange	    
-	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
-	    
-	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
-	    Mockito.when(this.categoriasServiceImpl.existsCategoryByName(anyString())).thenReturn(false);
-	    Mockito.doThrow(new RuntimeException("Error al crear categoría")).when(this.categoriasServiceImpl).saveCategory(DataProvider.categoryDTOMock());
-	    
-	    // Act
-	    ResponseEntity<?> response = this.categorysController.createCategory(DataProvider.categoryDTOMock(), mockBindingResult);
+		// Arrange
+		BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
 
-	    // Assert
-	    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+		Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
+		Mockito.when(this.categoriasServiceImpl.existsCategoryByName(anyString())).thenReturn(false);
+		Mockito.doThrow(new RuntimeException("Error al crear categoría")).when(this.categoriasServiceImpl)
+				.saveCategory(DataProvider.categoryDTOMock());
+
+		// Act
+		ResponseEntity<?> response = this.categorysController.createCategory(DataProvider.categoryDTOMock(),
+				mockBindingResult);
+
+		// Assert
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 	}
-	
+
+	@Test
+	void testUpdateCategoryHasErrorsTrue() {
+
+		// Arrange
+		Integer id = 6;
+
+		BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
+		Mockito.when(mockBindingResult.hasErrors()).thenReturn(true);
+		CategoryDTO categoryDTO = this.categoriasServiceImpl.getCategoryById(id);
+
+		// Act
+		ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);
+
+		// Assert
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+	}
+
 	@Test
 	void testUpdateCategoryHasErrorsFalse() {
 
-		// Arrange	  
+		// Arrange
 		Integer id = 6;
-		
-	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);	    
-	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(true);	    
-	    CategoryDTO categoryDTO = this.categoriasServiceImpl.getCategoryById(id);
-	   
-	   // Act
-	    ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);
-	    
-	    // Assert
-	    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-	}
-	
-	@Test
-	void testUpdateCategory() {
 
-		// Arrange	  
-		Integer id = 6;	
-		
 		CategoryDTO categoryDTO = DataProvider.categoryDTOMock(); // Create a sample category DTO
 		CategoriasModel categoriasModel = DataProvider.categoriasModelMock(); // Create a sample category Model
-		
-		
-	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);	    
-	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
-	    Mockito.when(categoriasServiceImpl.getCategoryModelById(anyInt())).thenReturn(categoriasModel);
-	    Mockito.when(categoriasServiceImpl.getCategoryById(anyInt())).thenReturn(categoryDTO);
-	    //Mockito.when(categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTO.getNombre(), id)).thenReturn(true);
-	    
-	    ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);
-	   // 
-	  // Mockito.when(anyString()).thenReturn(notNull());
-	  //  Mockito.when(categoryDTO.getNombre().equals(categoryDTO.getNombre()));
-	  //  Mockito.when(this.categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTO.getNombre(), anyInt()));
 
-	    // Act
-	    //ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);
-	    
-	    // Assert
-	    assertEquals(HttpStatus.OK, response.getStatusCode());
+		BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
+		Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
+		Mockito.when(categoriasServiceImpl.getCategoryModelById(anyInt())).thenReturn(categoriasModel);
+		Mockito.when(categoriasServiceImpl.getCategoryById(anyInt())).thenReturn(categoryDTO);
+
+		// Act
+		ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);
+
+		// Assert
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+	}
+
+	@Test
+	void testUpdateCategoryCategoryModelByIdNull() {
+
+		// Arrange
+		Integer id = 6;
+
+		CategoryDTO categoryDTO = DataProvider.categoryDTOMock(); // Create a sample category DTO
+		CategoriasModel categoriasModel = DataProvider.categoryModelNullMock(); // Create a sample category Model
+
+		BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
+		Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
+		Mockito.when(categoriasServiceImpl.getCategoryModelById(anyInt())).thenReturn(categoriasModel);
+
+		// Act
+		ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);
+
+		// Assert
+		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
 	
 	@Test
-	void testUpdateCategoryModelByIdNull() {
+	void testUpdateexistsCategoryByNameExcludingId() {
 
-		// Arrange	  
-		Integer id = 6;	
+		// Arrange
+		Integer id = 6;
+
+		CategoryDTO categoryDTO = DataProvider.categoryDTONullMock(); // Create a sample category DTO
+		CategoriasModel categoriasModel = DataProvider.categoryModelNullMock(); // Create a sample category Model
+
+		BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
+		Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);		
 		
-		CategoryDTO categoryDTO = DataProvider.categoryDTOMock(); // Create a sample category DTO
-		CategoriasModel categoriasModel = DataProvider.categoryModelNullMock(); //DataProvider.categoriasModelMock(); // Create a sample category Model
-		
-		
-	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);	    
-	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
-	    Mockito.when(categoriasServiceImpl.getCategoryModelById(anyInt())).thenReturn(categoriasModel);
-	    
-	    ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);	    
-	    
-	    // Assert
-	    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+		Mockito.when(categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTO.getNombre(), id)).thenReturn(true);
+
+		// Act
+		ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);
+
+		// Assert
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
 	
 	@Test
-	void testUpdateCategoryByNameExcludingId() {
+	void testUpdateCategorySaveCategoryModelCathIllegalArgumentException() {
 
-		// Arrange	  
-		Integer id = 6;	
-		
+		// Arrange
+		Integer id = 6;
+
 		CategoryDTO categoryDTO = DataProvider.categoryDTOMock(); // Create a sample category DTO
-		CategoriasModel categoriasModel = DataProvider.categoryModelNullMock(); //DataProvider.categoriasModelMock(); // Create a sample category Model
-		CategoriasModel categoriasModelNew = DataProvider.categoriasModelMock();
+		CategoriasModel categoriasModel = DataProvider.categoriasModelMock(); // Create a sample category Model
+
+		BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
+		Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
+		Mockito.when(categoriasServiceImpl.getCategoryModelById(anyInt())).thenReturn(categoriasModel);		
+		Mockito.when(categoriasServiceImpl.getCategoryById(anyInt())).thenReturn(categoryDTO);
 		
-	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);	    
-	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
-	    //Mockito.when(categoriasServiceImpl.getCategoryModelById(anyInt())).thenReturn(categoriasModel);
-	    //Mockito.when(categoriasServiceImpl.getCategoryById(anyInt())).thenReturn(categoryDTO);
-	    //Mockito.when(categoriasServiceImpl.existsCategoryByNameExcludingId(any(), anyInt())).thenReturn(true);
-	    CategoryDTO categoryDTONew = this.categoriasServiceImpl.getCategoryById(categoriasModelNew.getId());
-	    Mockito.when(categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTONew.getNombre(), anyInt())).thenReturn(true);
-	    
-	    ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);	    
-	    
-	    // Assert
-	    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+		Mockito.doThrow(new IllegalArgumentException("Error retrieving category")).when(this.categoriasServiceImpl)
+		.saveCategoryModel(categoriasModel);
+
+		// Act
+		ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);
+
+		// Assert
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+	}
+	
+	@Test
+	void testUpdateCategorySaveCategoryModelCathException() {
+
+		// Arrange
+		Integer id = 6;
+
+		CategoryDTO categoryDTO = DataProvider.categoryDTOMock(); // Create a sample category DTO
+		CategoriasModel categoriasModel = DataProvider.categoriasModelMock(); // Create a sample category Model
+
+		BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
+		Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
+		Mockito.when(categoriasServiceImpl.getCategoryModelById(anyInt())).thenReturn(categoriasModel);		
+		Mockito.when(categoriasServiceImpl.getCategoryById(anyInt())).thenReturn(categoryDTO);
+		
+		Mockito.doThrow(new RuntimeException("Error retrieving category")).when(this.categoriasServiceImpl)
+		.saveCategoryModel(categoriasModel);
+
+		// Act
+		ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);
+
+		// Assert
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+	}
+
+	@Test
+	void testdeleteCategoryByIdFalse() {
+
+		// Arrange
+		Integer id = 6;
+
+		Mockito.when(categoriasServiceImpl.existsCategoryById(id)).thenReturn(false);
+
+		// Act
+		ResponseEntity<?> response = this.categorysController.deleteCategoryById(id);
+
+		// Assert
+		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+	}
+
+	@Test
+	void testdeleteCategoryByIdTrueCatch() {
+
+		// Arrange
+		Integer id = 6;
+
+		Mockito.when(categoriasServiceImpl.existsCategoryById(id)).thenReturn(true);
+
+		Mockito.doThrow(new RuntimeException("Error retrieving category")).when(this.categoriasServiceImpl)
+				.deleteCategory(id);
+
+		// Act
+		ResponseEntity<?> response = this.categorysController.deleteCategoryById(id);
+
+		// Assert
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+	}
+	
+	@Test
+	void testdeleteCategoryByIdTrueTry() {
+
+		// Arrange		
+		CategoriasModel categoriasModel = DataProvider.categoriasModelMock();
+
+		Mockito.when(categoriasServiceImpl.existsCategoryById(categoriasModel.getId())).thenReturn(true);
+
+		// Act
+		ResponseEntity<?> response = this.categorysController.deleteCategoryById(categoriasModel.getId());
+
+		// Assert		
+		assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
 }

@@ -117,7 +117,23 @@ public class CategorysController {
 			
 			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error registering category: " + e.getMessage());
 		}		
-	}
+	}	
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<?> updateCategoryDemo(@PathVariable("id") int id, @Valid @RequestBody CategoryDTO categoryDTO) {
+				
+		if(categoryDTO.getNombre() != null) {
+			
+			return Utilidades.generateResponse(HttpStatus.CONFLICT, "Category name already exists. Please choose another name."); 
+		}	
+			
+			CategoriasModel categoriasModel = this.categoriasServiceImpl.getCategoryModelById(id);
+			categoriasModel.setNombre(categoryDTO.getNombre());
+			categoriasModel.setSlug(Utilidades.getSlug(categoriasModel.getNombre()));
+			
+			this.categoriasServiceImpl.saveCategoryModel(categoriasModel);		
+			return Utilidades.generateResponse(HttpStatus.OK, "Category updated successfully.");
+	}	
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?>  deleteCategoryById(@PathVariable("id") int id) {
