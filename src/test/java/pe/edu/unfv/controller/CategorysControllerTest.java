@@ -385,7 +385,6 @@ class CategorysControllerTest {
 	@Test
 	void testdeleteCategoryByIdTrueTry() {
 
-<<<<<<< HEAD
 		// Arrange		
 		CategoriasModel categoriasModel = DataProvider.categoriasModelMock();
 
@@ -396,27 +395,5 @@ class CategorysControllerTest {
 
 		// Assert		
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-=======
-		// Arrange	  
-		Integer id = 6;	
-		
-		CategoryDTO categoryDTO = DataProvider.categoryDTOMock(); // Create a sample category DTO
-		CategoriasModel categoriasModel = DataProvider.categoryModelNullMock(); //DataProvider.categoriasModelMock(); // Create a sample category Model
-		CategoriasModel categoriasModelNew = DataProvider.categoriasModelMock();
-		
-	    BindingResult mockBindingResult = Mockito.mock(BindingResult.class);	    
-	    Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);
-	    Mockito.doThrow(new IllegalArgumentException("Error al crear categoría")).when(this.categoriasServiceImpl).saveCategoryModel(categoriasModelNew);
-	    //Mockito.when(categoriasServiceImpl.getCategoryModelById(anyInt())).thenReturn(categoriasModel);
-	    //Mockito.when(categoriasServiceImpl.getCategoryById(anyInt())).thenReturn(categoryDTO);
-	    //Mockito.when(categoriasServiceImpl.existsCategoryByNameExcludingId(any(), anyInt())).thenReturn(true);
-	    //CategoryDTO categoryDTONew = this.categoriasServiceImpl.getCategoryById(categoriasModelNew.getId());
-	    //Mockito.when(this.categoriasServiceImpl.existsCategoryByNameExcludingId(categoriasModelNew.getNombre(), id)).thenReturn(true);
-	    
-	    ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);	    
-	    
-	    // Assert
-	    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
->>>>>>> 07c550e7ad7b48717e528a730f91a3134f8069de
 	}
 }
