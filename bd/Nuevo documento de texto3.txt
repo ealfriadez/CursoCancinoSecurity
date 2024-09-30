@@ -1,0 +1,125 @@
+Claro, aquí tienes un ejemplo de cómo podrías escribir pruebas unitarias para el método `updateCategoryDemo` utilizando JUnit y Mockito. Asegúrate de adaptar el código según tus necesidades y el contexto de tu proyecto.
+
+### Dependencias necesarias
+Asegúrate de tener las siguientes dependencias en tu archivo `pom.xml` si estás usando Maven:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+### Clase de prueba
+
+```java
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+public class CategoryControllerTest {
+
+    @InjectMocks
+    private CategoryController categoryController;
+
+    @Mock
+    private CategoriasServiceImpl categoriasServiceImpl;
+
+    @Mock
+    private Utilidades utilidades;
+
+    private CategoryDTO existingCategoryDTO;
+    private CategoryDTO updatedCategoryDTO;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        existingCategoryDTO = new CategoryDTO();
+        existingCategoryDTO.setNombre("Existing Category");
+
+        updatedCategoryDTO = new CategoryDTO();
+        updatedCategoryDTO.setNombre("Updated Category");
+    }
+
+    @Test
+    void testUpdateCategory_Success() {
+        int categoryId = 1;
+
+        when(categoriasServiceImpl.getCategoryById(categoryId)).thenReturn(existingCategoryDTO);
+        when(categoriasServiceImpl.getCategoryModelById(categoryId)).thenReturn(new CategoriasModel());
+        when(categoriasServiceImpl.saveCategoryModel(any(CategoriasModel.class))).thenReturn(null);
+        when(utilidades.getSlug(updatedCategoryDTO.getNombre())).thenReturn("updated-category");
+
+        ResponseEntity<?> response = categoryController.updateCategoryDemo(categoryId, updatedCategoryDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Category updated successfully.", response.getBody());
+    }
+
+    @Test
+    void testUpdateCategory_NameExists() {
+        int categoryId = 1;
+
+        when(categoriasServiceImpl.getCategoryById(categoryId)).thenReturn(existingCategoryDTO);
+        when(categoriasServiceImpl.existsCategoryByNameExcludingId("Updated Category", categoryId)).thenReturn(true);
+
+        ResponseEntity<?> response = categoryController.updateCategoryDemo(categoryId, updatedCategoryDTO);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("Category name already exists. Please choose another name.", response.getBody());
+    }
+
+    @Test
+    void testUpdateCategory_BadRequest() {
+        int categoryId = 1;
+
+        when(categoriasServiceImpl.getCategoryById(categoryId)).thenReturn(existingCategoryDTO);
+        when(categoriasServiceImpl.getCategoryModelById(categoryId)).thenThrow(new IllegalArgumentException("Invalid category ID"));
+
+        ResponseEntity<?> response = categoryController.updateCategoryDemo(categoryId, updatedCategoryDTO);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Category bad request: Invalid category ID", response.getBody());
+    }
+
+    @Test
+    void testUpdateCategory_InternalServerError() {
+        int categoryId = 1;
+
+        when(categoriasServiceImpl.getCategoryById(categoryId)).thenReturn(existingCategoryDTO);
+        when(categoriasServiceImpl.getCategoryModelById(categoryId)).thenThrow(new RuntimeException("Some error"));
+
+        ResponseEntity<?> response = categoryController.updateCategoryDemo(categoryId, updatedCategoryDTO);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Error registering category: Some error", response.getBody());
+    }
+}
+```
+
+### Descripción de las pruebas
+
+1. **`testUpdateCategory_Success`**: Verifica que la actualización de una categoría funcione correctamente, retornando un estado HTTP 200 y un mensaje de éxito.
+
+2. **`testUpdateCategory_NameExists`**: Simula el caso en que el nombre de la categoría ya existe, devolviendo un estado HTTP 409 (Conflicto).
+
+3. **`testUpdateCategory_BadRequest`**: Simula una excepción de `IllegalArgumentException`, verificando que se retorne un estado HTTP 400 (Bad Request).
+
+4. **`testUpdateCategory_InternalServerError`**: Simula un error no manejado, retornando un estado HTTP 500 (Internal Server Error).
+
+### Nota
+Asegúrate de que los nombres de las clases y métodos se correspondan con tu implementación actual. Además, adapta la configuración de pruebas según tu estructura de proyecto y cualquier otra configuración que tengas en uso.
