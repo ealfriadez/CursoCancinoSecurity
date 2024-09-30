@@ -40,14 +40,16 @@ public class CategorysController {
 	public ResponseEntity<?>  categorysById(@PathVariable("id") Integer id) {
 		
 		if (!this.categoriasServiceImpl.existsCategoryById(id)) {			
-			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, "Category with id: ".concat(id +" does not exist"));
+			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, 
+					"Category with id: ".concat(id +" does not exist"));
 		}
 		
 		try {
 			CategoryDTO categoryDTO = this.categoriasServiceImpl.getCategoryById(id);
 			return ResponseEntity.ok(categoryDTO);
 		} catch (final Exception e) {
-			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving category: " + e.getMessage());			
+			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, 
+					"Error retrieving category: " + e.getMessage());			
 		}		
 	}
 	
@@ -63,7 +65,8 @@ public class CategorysController {
 		
 		if (this.categoriasServiceImpl.existsCategoryByName(categoryDTO.getNombre())) {
             
-            return Utilidades.generateResponse(HttpStatus.CONFLICT, "Category name already exists. Please choose another name.");
+            return Utilidades.generateResponse(HttpStatus.CONFLICT, 
+            		"Category name already exists. Please choose another name.");
         }
 		
 		try {
@@ -72,12 +75,15 @@ public class CategorysController {
 			return Utilidades.generateResponse(HttpStatus.CREATED, "Category created successfully.");
 		} catch (Exception e) {
 			
-			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error registering category: " + e.getMessage());
+			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, 
+					"Error registering category: " + e.getMessage());
 		}		
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> updateCategory(@PathVariable("id") int id, @Valid @RequestBody CategoryDTO categoryDTO, BindingResult result) {
+	public ResponseEntity<?> updateCategory(@PathVariable("id") int id, 
+			@Valid @RequestBody CategoryDTO categoryDTO, 
+			BindingResult result) {
 		
 		if (result.hasErrors()) {
             String firstErrorMessage = result.getAllErrors().stream()
@@ -88,7 +94,8 @@ public class CategorysController {
         }
 		
 		if (this.categoriasServiceImpl.getCategoryModelById(id) == null) {
-			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, "Category with id: ".concat(id +" does not exist"));
+			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, 
+					"Category with id: ".concat(id +" does not exist"));
 		}		
 		
 		CategoryDTO existingCategory = this.categoriasServiceImpl.getCategoryById(id);
@@ -99,7 +106,8 @@ public class CategorysController {
 				&& 
 				this.categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTO.getNombre(), id)) {
 			
-			return Utilidades.generateResponse(HttpStatus.CONFLICT, "Category name already exists. Please choose another name."); 
+			return Utilidades.generateResponse(HttpStatus.CONFLICT, 
+					"Category name already exists. Please choose another name."); 
 		}
 		
 		try {
@@ -115,7 +123,8 @@ public class CategorysController {
 			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST, "Category bad request: " + i.getMessage());
 		} catch (Exception e) {
 			
-			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error registering category: " + e.getMessage());
+			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, 
+					"Error registering category: " + e.getMessage());
 		}		
 	}	
 	
@@ -139,14 +148,16 @@ public class CategorysController {
 	public ResponseEntity<?>  deleteCategoryById(@PathVariable("id") int id) {
 		
 		if (!this.categoriasServiceImpl.existsCategoryById(id)) {			
-			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, "Category with id: ".concat(id +" does not exist"));
+			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, 
+					"Category with id: ".concat(id +" does not exist"));
 		}
 		
 		try {
 			this.categoriasServiceImpl.deleteCategory(id);
 			return Utilidades.generateResponse(HttpStatus.OK, "Category deleted successfully.");
 		} catch (Exception e) {
-			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving category: " + e.getMessage());			
+			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, 
+					"Error retrieving category: " + e.getMessage());			
 		}		
 	}
 }
