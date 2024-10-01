@@ -128,6 +128,54 @@ public class CategorysController {
 		}		
 	}
 	
+	@PutMapping("/{id}")
+	public ResponseEntity<?> updateCategoryDemo(@PathVariable("id") int id, 
+			@Valid @RequestBody CategoryDTO categoryDTO, 
+			BindingResult result) {
+		
+		if (result.hasErrors()) {
+            String firstErrorMessage = result.getAllErrors().stream()
+                .map(ObjectError::getDefaultMessage)
+                .findFirst()
+                .orElse("Unknown validation error");
+            return new ResponseEntity<>(new ResponseNew(firstErrorMessage), HttpStatus.BAD_REQUEST);
+        }
+		
+		if (this.categoriasServiceImpl.getCategoryModelById(id) == null) {
+			return Utilidades.generateResponse(HttpStatus.NOT_FOUND, 
+					"Category with id: ".concat(id +" does not exist"));
+		}		
+		
+		CategoryDTO existingCategory = this.categoriasServiceImpl.getCategoryById(id);
+		
+		if(categoryDTO.getNombre() != null && 
+				!categoryDTO.getNombre().equals(existingCategory.getNombre()) && 
+					this.categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTO.getNombre(), id)) {
+		//if(this.categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTO.getNombre(), id)) {
+		//if(categoryDTO.getNombre() != null) {
+		//if(!categoryDTO.getNombre().equals(existingCategory.getNombre())) {
+			return Utilidades.generateResponse(HttpStatus.CONFLICT, 
+					"Category name already exists. Please choose another name."); 
+		}
+		
+		try {
+			
+			CategoriasModel categoriasModel = this.categoriasServiceImpl.getCategoryModelById(id);
+			categoriasModel.setNombre(categoryDTO.getNombre());
+			categoriasModel.setSlug(Utilidades.getSlug(categoriasModel.getNombre()));
+			
+			this.categoriasServiceImpl.saveCategoryModel(categoriasModel);		
+			return Utilidades.generateResponse(HttpStatus.OK, "Category updated successfully.");
+		} catch (IllegalArgumentException i) {
+			
+			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST, "Category bad request: " + i.getMessage());
+		} catch (Exception e) {
+			
+			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, 
+					"Error registering category: " + e.getMessage());
+		}		
+	}
+	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?>  deleteCategoryById(@PathVariable("id") int id) {
 		

@@ -81,7 +81,7 @@ public class ProductosServiceImpl implements IProductosService {
 		return iProductosRepository.existsById(id);
 	}	
 	
-	private ProductDTO convertProductToDTO(ProductosModel productosModel) {
+	public ProductDTO convertProductToDTO(ProductosModel productosModel) {
 		
 		ProductDTO productDTO = new ProductDTO();
 		productDTO.setNombre(productosModel.getNombre());
@@ -90,7 +90,7 @@ public class ProductosServiceImpl implements IProductosService {
 		return productDTO;
 	}	
 	
-	private ProductosModel convertDTOtoProduct(ProductDTO productDTO) {
+	public ProductosModel convertDTOtoProduct(ProductDTO productDTO) {
 		
 		ProductosModel productosModel = new ProductosModel();
 		productosModel.setNombre(productDTO.getNombre());

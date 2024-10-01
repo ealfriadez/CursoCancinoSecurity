@@ -49,5 +49,17 @@ public class ProductosModel {
 	
 	@OneToOne
 	@JoinColumn(name = "categoria_id")
-	private CategoriasModel categoriaId;	
+	private CategoriasModel categoriaId;
+
+	public ProductosModel(int id, String nombre, String slug, String descripcion, int precio, String nombreFoto,
+			String tipoFoto) {
+		super();
+		this.id = id;
+		this.nombre = nombre;
+		this.slug = slug;
+		this.descripcion = descripcion;
+		this.precio = precio;
+		this.nombreFoto = nombreFoto;
+		this.tipoFoto = tipoFoto;
+	}		
 }
