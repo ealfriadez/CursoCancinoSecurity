@@ -280,19 +280,21 @@ class CategorysControllerTest {
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
 	
+	
 	@Test
-	void testUpdateexistsCategoryByNameExcludingId() {
+	void testUpdateExistsCategoryByNameExcludingId() {
 
 		// Arrange
 		Integer id = 6;
 
-		CategoryDTO categoryDTO = DataProvider.categoryDTONullMock(); // Create a sample category DTO
+		CategoryDTO categoryDTO = DataProvider.categoryDTOMock(); // Create a sample category DTO
 		CategoriasModel categoriasModel = DataProvider.categoryModelNullMock(); // Create a sample category Model
 
 		BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
 		Mockito.when(mockBindingResult.hasErrors()).thenReturn(false);		
 		
-		Mockito.when(categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTO.getNombre(), id)).thenReturn(true);
+		//Mockito.when(categoriasServiceImpl.getCategoryById(id)).thenReturn(categoryDTO);
+		//Mockito.when(categoriasServiceImpl.existsCategoryByNameExcludingId(categoryDTO.getNombre(), id)).thenReturn(true);
 
 		// Act
 		ResponseEntity<?> response = this.categorysController.updateCategory(id, categoryDTO, mockBindingResult);
