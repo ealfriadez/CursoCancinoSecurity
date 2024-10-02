@@ -1,7 +1,5 @@
 package pe.edu.unfv.util;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.Normalizer;
 import java.util.Date;

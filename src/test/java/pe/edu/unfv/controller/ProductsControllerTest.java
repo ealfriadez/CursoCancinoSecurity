@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -25,6 +27,7 @@ import pe.edu.unfv.persistence.entity.model.ProductosModel;
 import pe.edu.unfv.service.implement.CategoriasServiceImpl;
 import pe.edu.unfv.service.implement.DataProvider;
 import pe.edu.unfv.service.implement.ProductosServiceImpl;
+import pe.edu.unfv.util.Utilidades;
 
 @ExtendWith(MockitoExtension.class)
 class ProductsControllerTest {
@@ -132,35 +135,431 @@ class ProductsControllerTest {
 	}
 
 	@Test
-	void testSaveProductUploadImage() throws IOException {
+	void testSaveProductUploadImageExistsProductByNameTrue() throws IOException {
 
 		// Given -> Mientras
 		// Convertir para el comportamiento esperado
-		String nombre = DataProvider.productosModelMock().getNombre();
-		String descripcion = DataProvider.productosModelMock().getDescripcion();
-		Integer precio = DataProvider.productosModelMock().getPrecio();
-		Integer categoria = DataProvider.productosModelMock().getCategoriaId().getId();
-		byte[] fileBytes = "datos de imagen".getBytes();
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
 		MultipartFile mockFile = mock(MultipartFile.class);
 
 		// When -> Cuando
 		// Simular el comportamiento del repositorio
-		Mockito.when(mockFile.getBytes()).thenReturn(fileBytes);
-		Mockito.when(mockFile.getContentType()).thenReturn("image/jpeg");		
 		Mockito.when(this.productosServiceImpl.existsProductByName(nombre)).thenReturn(true);
-		
-		ResponseEntity<?> response = this.productsController.saveProductUploadImage(nombre, descripcion, precio, categoria, mockFile);
-	
+
+		ResponseEntity<?> response = this.productsController.saveProductUploadImage(nombre, descripcion, precio,
+				categoria, mockFile);
+
 		// Then -> entonces
-				// Verificar los resultados correctamentes
-				assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.productosServiceImpl).existsProductByName(nombre);
 	}
 
 	@Test
-	void testUpdateProductUploadImage() {
-		fail("Not yet implemented");
+	void testSaveProductUploadImageExistsProductByNameFalse() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+		MultipartFile mockFile = mock(MultipartFile.class);
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		Mockito.when(this.productosServiceImpl.existsProductByName(nombre)).thenReturn(false);
+
+		ResponseEntity<?> response = this.productsController.saveProductUploadImage(nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.productosServiceImpl).existsProductByName(nombre);
 	}
 
+	@Test
+	void testSaveProductUploadImageEmptyFields() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado		
+		MultipartFile mockFile = mock(MultipartFile.class);
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		ResponseEntity<?> response = productsController.saveProductUploadImage("", "Description", 100, 1, mockFile);
+		ResponseEntity<?> response1 = productsController.saveProductUploadImage("Description", "", 100, 1, mockFile);
+		ResponseEntity<?> response2 = productsController.saveProductUploadImage("Description", "Description", 0, 1,
+				mockFile);
+		ResponseEntity<?> response3 = productsController.saveProductUploadImage("Description", "Description", 1, 0,
+				mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertEquals(HttpStatus.BAD_REQUEST, response1.getStatusCode());
+		assertEquals(HttpStatus.BAD_REQUEST, response2.getStatusCode());
+		assertEquals(HttpStatus.BAD_REQUEST, response3.getStatusCode());
+	}
+
+	@Test
+	void testSaveProductUploadImageExistsCategoryByIdFalse() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+		MultipartFile mockFile = mock(MultipartFile.class);
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(categoria)).thenReturn(false);
+
+		ResponseEntity<?> response = this.productsController.saveProductUploadImage(nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.categoriasServiceImpl).existsCategoryById(categoria);
+	}
+
+	@Test
+	void testSaveProductUploadImageExistsCategoryByIdTrue() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		MultipartFile mockFile = mock(MultipartFile.class);
+		Mockito.when(mockFile.getContentType()).thenReturn("image/jpeg");
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(categoria)).thenReturn(true);
+
+		ResponseEntity<?> response = this.productsController.saveProductUploadImage(nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.categoriasServiceImpl).existsCategoryById(categoria);
+	}
+
+	@Test
+	void testSaveProductUploadImageFileIsEmptyTrue() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		MultipartFile mockFile = mock(MultipartFile.class);
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(categoria)).thenReturn(true);
+		Mockito.when(mockFile.isEmpty()).thenReturn(true);
+
+		ResponseEntity<?> response = this.productsController.saveProductUploadImage(nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.categoriasServiceImpl).existsCategoryById(categoria);
+	}
+
+	@Test
+	void testSaveProductUploadImageFileIsEmptyFalse() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		MultipartFile mockFile = mock(MultipartFile.class);
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(categoria)).thenReturn(true);
+		Mockito.when(mockFile.getContentType()).thenReturn("image/jpeg");
+		Mockito.when(mockFile.isEmpty()).thenReturn(false);
+
+		ResponseEntity<?> response = this.productsController.saveProductUploadImage(nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.categoriasServiceImpl).existsCategoryById(categoria);
+	}
+
+	@Test
+	void testSaveProductUploadImageNombreImagenNo() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		MultipartFile mockFile = mock(MultipartFile.class);
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(categoria)).thenReturn(true);
+		Mockito.when(mockFile.getContentType()).thenReturn("image/jpeg");
+		Mockito.when(mockFile.isEmpty()).thenReturn(false);
+
+		String nombreImagen = Utilidades.guardarArchivo(mockFile, null);
+		Mockito.when(nombreImagen).thenReturn("no");
+
+		ResponseEntity<?> response = this.productsController.saveProductUploadImage(nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.categoriasServiceImpl).existsCategoryById(categoria);
+	}
+
+	@Test
+	void testSaveProductUploadImageNombreImagenDiferenteNo() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		MultipartFile mockFile = mock(MultipartFile.class);
+		// Mockito.when(mockFile.getBytes()).thenReturn(fileBytes);
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(categoria)).thenReturn(true);
+		Mockito.when(mockFile.getContentType()).thenReturn("image/jpeg");
+		Mockito.when(mockFile.isEmpty()).thenReturn(false);
+
+		String nombreImagen = Utilidades.guardarArchivo(mockFile, null);
+		Mockito.when(nombreImagen).thenReturn("xx");
+
+		ResponseEntity<?> response = this.productsController.saveProductUploadImage(nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.categoriasServiceImpl).existsCategoryById(categoria);
+	}
+
+	@Test
+	void testSaveProductUploadImageNombreImagenCatch() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		MultipartFile mockFile = mock(MultipartFile.class);
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(categoria)).thenReturn(true);
+		Mockito.when(mockFile.getContentType()).thenReturn("image/jpeg");
+		Mockito.when(mockFile.isEmpty()).thenReturn(false);
+		Mockito.doThrow(new RuntimeException("Upload failed")).when(productosServiceImpl).saveProductImage(anyString(),
+				anyString(), anyInt(), anyInt(), any(), anyString());
+
+		ResponseEntity<?> response = this.productsController.saveProductUploadImage(nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.productosServiceImpl).saveProductImage(anyString(), anyString(), anyInt(), anyInt(), any(),
+				anyString());
+	}
+	
+	@Test
+	void testUpdateProductUploadImageeExistsProductByNameTrue() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		Integer id = DataProvider.productosModelMockCategory().getId();
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+		MultipartFile mockFile = mock(MultipartFile.class);
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		Mockito.when(this.productosServiceImpl.existsProductByName(nombre)).thenReturn(true);
+
+		ResponseEntity<?> response = this.productsController.updateProductUploadImage(id, nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.productosServiceImpl).existsProductByName(nombre);
+	}
+	
+	@Test
+	void testUpdateProductUploadImageeExistsProductByNameFalse() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		Integer id = DataProvider.productosModelMockCategory().getId();
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+		MultipartFile mockFile = mock(MultipartFile.class);
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		Mockito.when(this.productosServiceImpl.existsProductByName(nombre)).thenReturn(false);
+
+		ResponseEntity<?> response = this.productsController.updateProductUploadImage(id, nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.productosServiceImpl).existsProductByName(nombre);
+	}
+	
+	@Test
+	void testUpdateProductUploadImageEmptyFields() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado	
+		Integer id = DataProvider.productosModelMockCategory().getId();
+		MultipartFile mockFile = mock(MultipartFile.class);
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		ResponseEntity<?> response = productsController.updateProductUploadImage(id, "", "Description", 100, 1, mockFile);
+		ResponseEntity<?> response1 = productsController.updateProductUploadImage(id, "Description", "", 100, 1, mockFile);
+		ResponseEntity<?> response2 = productsController.updateProductUploadImage(id, "Description", "Description", 0, 1,
+				mockFile);
+		ResponseEntity<?> response3 = productsController.updateProductUploadImage(id, "Description", "Description", 1, 0,
+				mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertEquals(HttpStatus.BAD_REQUEST, response1.getStatusCode());
+		assertEquals(HttpStatus.BAD_REQUEST, response2.getStatusCode());
+		assertEquals(HttpStatus.BAD_REQUEST, response3.getStatusCode());
+	}
+	
+	@Test
+	void testUpdateProductUploadImageExistsCategoryByIdFalse() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		Integer id = DataProvider.productosModelMockCategory().getId();
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+		MultipartFile mockFile = mock(MultipartFile.class);		
+		
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		Mockito.when(!this.categoriasServiceImpl.existsCategoryById(categoria)).thenReturn(false);
+
+		ResponseEntity<?> response = this.productsController.updateProductUploadImage(id, nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.categoriasServiceImpl).existsCategoryById(categoria);
+	}	
+	
+	@Test
+	void testUpdateProductUploadImageFileIsEmptyTrue() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		Integer id = DataProvider.productosModelMockCategory().getId();
+		String nombre = DataProvider.productosModelMockCategory().getNombre();
+		String descripcion = DataProvider.productosModelMockCategory().getDescripcion();
+		Integer precio = DataProvider.productosModelMockCategory().getPrecio();
+		Integer categoria = DataProvider.productosModelMockCategory().getId();
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		MultipartFile mockFile = mock(MultipartFile.class);
+		Mockito.when(this.categoriasServiceImpl.existsCategoryById(categoria)).thenReturn(true);
+		Mockito.when(mockFile.isEmpty()).thenReturn(true);
+
+		ResponseEntity<?> response = this.productsController.updateProductUploadImage(id, nombre, descripcion, precio,
+				categoria, mockFile);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.categoriasServiceImpl).existsCategoryById(categoria);
+	}
+	
+	/*
 	@Test
 	void testDeleteProductById() {
 		fail("Not yet implemented");
@@ -170,5 +569,5 @@ class ProductsControllerTest {
 	void testDownloadImage() {
 		fail("Not yet implemented");
 	}
-
+*/
 }

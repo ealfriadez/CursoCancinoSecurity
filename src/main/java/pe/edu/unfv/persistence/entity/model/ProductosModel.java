@@ -61,5 +61,18 @@ public class ProductosModel {
 		this.precio = precio;
 		this.nombreFoto = nombreFoto;
 		this.tipoFoto = tipoFoto;
-	}		
+	}
+
+	public ProductosModel(int id, String nombre, String slug, String descripcion, int precio, String nombreFoto,
+			String tipoFoto, CategoriasModel categoriaId) {
+		super();
+		this.id = id;
+		this.nombre = nombre;
+		this.slug = slug;
+		this.descripcion = descripcion;
+		this.precio = precio;
+		this.nombreFoto = nombreFoto;
+		this.tipoFoto = tipoFoto;
+		this.categoriaId = categoriaId;
+	}	
 }

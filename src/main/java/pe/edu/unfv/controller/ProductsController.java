@@ -82,7 +82,7 @@ public class ProductsController {
 		}
 		
 		String nombreImagen = Utilidades.guardarArchivo(file, null);
-		if (nombreImagen == "no" || nombreImagen == null) {
+		if (nombreImagen == "no") {
 			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST, "The photo submitted is not valid, it must be JPG|PNG.");
 		}		
 
@@ -93,7 +93,7 @@ public class ProductsController {
 			return Utilidades.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error in the image upload: " + e.getMessage());
 		}		
-	}
+	}	
 	
 	@SuppressWarnings("static-access")
 	@PutMapping("/products/{id}")
@@ -130,11 +130,12 @@ public class ProductsController {
 		 if (!productosServiceImpl.existsProductById(id)) {			 
 			 return Utilidades.generateResponse(HttpStatus.NOT_FOUND, "The specified product does not exist. Please verify the entered data.");
 	     }
-	            
+	     
+		 /*
 	     if (!categoriasServiceImpl.existsCategoryById(categoria)) {	    	 
 	    	 return Utilidades.generateResponse(HttpStatus.NOT_FOUND, "The specified category does not exist. Please verify the entered data.");
 	     }
-		
+		*/
 		try {
 			
 			CategoriasModel categoriasModel = new CategoriasModel();
