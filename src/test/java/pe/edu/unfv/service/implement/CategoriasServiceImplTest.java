@@ -61,8 +61,8 @@ class CategoriasServiceImplTest {
 		// Then -> entonces
 		// Verificar los resultados correctamentes
 		assertNotNull(result);
-		assertEquals("Peñarol", result.getNombre());
-		assertEquals("Marcador", result.getSlug());
+		assertEquals("Virgil van Dijk", result.getNombre());
+		assertEquals("Liverpool", result.getSlug());
 		// Verificar las interacciones del repositorio (Mockito-specific)
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
 		verify(this.iCategoriasRepository).save(categoriasModel);
@@ -84,8 +84,8 @@ class CategoriasServiceImplTest {
 		ArgumentCaptor<CategoriasModel> argumentCaptor = ArgumentCaptor.forClass(CategoriasModel.class);
 		verify(this.iCategoriasRepository).save(argumentCaptor.capture());
 		assertNotNull(argumentCaptor);
-		assertEquals("Peñarol", argumentCaptor.getValue().getNombre());
-		assertEquals("Marcador", argumentCaptor.getValue().getSlug());
+		assertEquals("Virgil van Dijk", argumentCaptor.getValue().getNombre());
+		assertEquals("Liverpool", argumentCaptor.getValue().getSlug());
 		// Verificar las interacciones del repositorio (Mockito-specific)
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
 		verify(this.iCategoriasRepository).save(categoriasModel);

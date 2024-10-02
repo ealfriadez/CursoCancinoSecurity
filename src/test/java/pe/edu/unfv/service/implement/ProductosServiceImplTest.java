@@ -4,10 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -18,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.multipart.MultipartFile;
 
 import pe.edu.unfv.persistence.dto.ProductDTO;
 import pe.edu.unfv.persistence.entity.model.ProductosModel;
@@ -297,16 +303,87 @@ class ProductosServiceImplTest {
 		// Then -> entonces
 		// Verificar los resultados correctamentes
 		assertTrue(result);
-		
+
 		// Verificar las interacciones del repositorio (Mockito-specific)
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
 		verify(this.iProductosRepository).existsById(id);
-
 	}
-	/*
-	 * 
-	 * @Test void testSaveProductImage() { fail("Not yet implemented"); }
-	 * 
-	 * @Test void testDownloadImage() { fail("Not yet implemented"); }
-	 */
+
+	@Test
+	void testSaveProductImage() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		MultipartFile mockFile = mock(MultipartFile.class);
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		Mockito.when(mockFile.getContentType()).thenReturn("image/jpeg");
+		Mockito.when(mockFile.getBytes()).thenReturn("imageBytes".getBytes());
+		Mockito.when(iProductosRepository.save(any(ProductosModel.class))).thenReturn(new ProductosModel());
+
+		ProductosModel result = productosServiceImpl.saveProductImage("nombre", "descripcion", 10, 1, mockFile,
+				"imagen.jpg");
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertNotNull(result);
+	}
+
+	@Test
+	void testSaveProductImageException() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		MultipartFile mockFile = mock(MultipartFile.class);
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		Mockito.when(mockFile.getBytes()).thenThrow(new IOException("Error al leer el archivo"));
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		// Llamar al método y verificar que lanza IOException
+		assertThrows(IOException.class, () -> {
+			productosServiceImpl.saveProductImage("nombre", "descripcion", 100, 1, mockFile, "imagenTest.jpg");
+		});
+	}
+
+	@Test
+	void testDownloadImage() {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String nombreImagen = "imagen.jpg";
+		ProductosModel productosModel = new ProductosModel();
+		productosModel.setImageData("compressedImageData".getBytes());
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		Mockito.when(iProductosRepository.findProductosModelByNombreFoto(nombreImagen))
+				.thenReturn(Optional.of(productosModel));
+		byte[] imageBytes = productosServiceImpl.downloadImage(nombreImagen);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertNotNull(imageBytes);
+	}
+
+	@Test
+	void testDownloadImageNotFound() throws IOException {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String nombreImagen = "imagen.jpg";
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		Mockito.when(iProductosRepository.findProductosModelByNombreFoto(nombreImagen)).thenReturn(Optional.empty());
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		assertThrows(NoSuchElementException.class, () -> {
+			productosServiceImpl.downloadImage(nombreImagen);
+		});
+	}
 }

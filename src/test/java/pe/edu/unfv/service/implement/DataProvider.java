@@ -124,6 +124,11 @@ public class DataProvider {
 		return new ProductosModel(1, "Lionel Messi", "Inter Miami", "Jugado 1", 8500, "mesi", "united");
 	}
 	
+	public static ProductosModel productosModelMockAll(){		
+		
+		return new ProductosModel(1, "Lionel Messi", "Inter Miami", "Jugado 1", 8500, "mesi", "united", "0x6667687479727472747972743132333231', 1);
+	}
+	
 	public static ProductosModel productosModelEmptyMock(){		
 		
 		return new ProductosModel();

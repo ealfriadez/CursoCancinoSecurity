@@ -107,7 +107,9 @@ public class ProductosServiceImpl implements IProductosService {
 	}
 
 	@Override
-	public ProductosModel saveProductImage(String nombre, String descripcion, int precio, int categoria,
+	public ProductosModel saveProductImage(
+			String nombre, String descripcion, 
+			int precio, int categoria,
 			MultipartFile file, String nombreImagen) throws IOException {
 		
 		CategoriasModel categoriasModel = new CategoriasModel();
