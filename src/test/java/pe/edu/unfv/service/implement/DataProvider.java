@@ -227,6 +227,7 @@ public class DataProvider {
 	}
 	
 	public static String username = "ealfriadez";
+	public static String usernameOther = "other";
 	
 	public static Optional<UserEntity> userEntityEmptyModelMock(){
 		
