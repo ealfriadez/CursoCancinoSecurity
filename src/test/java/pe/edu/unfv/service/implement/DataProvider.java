@@ -1,12 +1,20 @@
 package pe.edu.unfv.service.implement;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import pe.edu.unfv.controller.dto.AuthCreateUserRequest;
+import pe.edu.unfv.controller.dto.AuthLoginRequest;
+import pe.edu.unfv.controller.dto.AuthResponse;
 import pe.edu.unfv.persistence.dto.CategoryDTO;
 import pe.edu.unfv.persistence.dto.ProductDTO;
 import pe.edu.unfv.persistence.entity.model.CategoriasModel;
 import pe.edu.unfv.persistence.entity.model.ProductosModel;
+import pe.edu.unfv.persistence.entity.security.RoleEntity;
+import pe.edu.unfv.persistence.entity.security.RoleEnum;
+import pe.edu.unfv.persistence.entity.security.UserEntity;
 
 public class DataProvider {
 
@@ -133,6 +141,16 @@ public class DataProvider {
 		return new ProductosModel(1, "Lionel Messi", "Inter Miami", "Jugado 1", 8500, "mesi", "united", categoriaId);
 	}
 	
+	public static ProductosModel productosModelMockCategory_(){	
+		
+		CategoriasModel categoriaId = new CategoriasModel();
+		categoriaId.setId(1);
+		
+		byte[] arraytoinsert = new byte[]{0,1,2,3,4,5,6,7,8,9};
+		
+		return new ProductosModel(1, "Lionel Messi", "Inter Miami", "Jugado 1", 8500, "mesi.jpg", "united", arraytoinsert, categoriaId);
+	}
+	
 	public static ProductosModel productosModelEmptyMock(){		
 		
 		return new ProductosModel();
@@ -174,6 +192,56 @@ public class DataProvider {
 	public static Optional<ProductosModel> productsOptionalModelEmptyModelMock(){
 						
 		Optional<ProductosModel> optional = Optional.empty();
+		
+		return optional;
+	}
+	
+	public static AuthCreateUserRequest authCreateUserRequestEmpty(){		
+		
+		return new AuthCreateUserRequest(null, null, null, null);
+	}
+	
+	public static AuthCreateUserRequest authCreateUserRequest(){		
+		
+		return new AuthCreateUserRequest("ealfriadez", "123456", "ealfriadez@gmail.com", null);
+	}
+	
+	public static AuthResponse authResponseTrue(){		
+		
+		return new AuthResponse("ealfriadez", "123456", "ealfriadez@gmail.com", true);
+	}
+	
+	public static AuthResponse authResponseFalse(){		
+		
+		return new AuthResponse("ealfriadez", "123456", "ealfriadez@gmail.com", false);
+	}
+	
+	public static AuthLoginRequest authLoginRequestEmpty(){		
+		
+		return new AuthLoginRequest(null, null);
+	}
+	
+	public static AuthLoginRequest authLoginRequest(){		
+		
+		return new AuthLoginRequest("ealfriadez", "123456");
+	}
+	
+	public static String username = "ealfriadez";
+	
+	public static Optional<UserEntity> userEntityEmptyModelMock(){
+		
+		Optional<UserEntity> optional = Optional.empty();
+		
+		return optional;
+	}
+	
+	public static Optional<UserEntity> userEntityModelMock(){		
+	
+		Set<RoleEntity> roles = new HashSet<>();		
+		
+		UserEntity userEntity = new UserEntity(1L, "Eleazar Alfredo", "ealfriadez@gmail.com", username, false, false, false, false, roles);
+		
+		Optional<UserEntity> optional = Optional.of(userEntity);
 		
 		return optional;
 	}

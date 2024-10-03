@@ -144,6 +144,7 @@
                         <configuration>
 							<excludes>
 								<exclude>**/controller/dto/*</exclude>
+								<exclude>**/controller/HomeController.class</exclude>
 								<exclude>**/persistence/dto/*</exclude>
 								<exclude>**/persistence/entity/security/*</exclude>
 								<exclude>**/entity/*</exclude>

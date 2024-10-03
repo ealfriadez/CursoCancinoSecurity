@@ -21,7 +21,6 @@ import pe.edu.unfv.persistence.entity.model.CategoriasModel;
 import pe.edu.unfv.persistence.entity.model.ProductosModel;
 import pe.edu.unfv.service.implement.CategoriasServiceImpl;
 import pe.edu.unfv.service.implement.ProductosServiceImpl;
-import pe.edu.unfv.util.ImageUtils;
 import pe.edu.unfv.util.Utilidades;
 
 @RestController
@@ -123,7 +122,7 @@ public class ProductsController {
 		}
 		
 		String nombreImagen = Utilidades.guardarArchivo(file, null);
-		if (nombreImagen == "no" || nombreImagen == null) {
+		if (nombreImagen == "no") {
 			return Utilidades.generateResponse(HttpStatus.BAD_REQUEST, "The photo submitted is not valid, it must be JPG|PNG.");
 		}	
 		
@@ -149,7 +148,8 @@ public class ProductsController {
 			productosModel.setPrecio(precio);
 			productosModel.setNombreFoto(nombreImagen);
 			productosModel.setTipoFoto(file.getContentType());
-			productosModel.setImageData(ImageUtils.compressImage(file.getBytes()));			
+			productosModel.setImageData(file.getBytes());	
+			//productosModel.setImageData(ImageUtils.compressImage(file.getBytes()));			
 			
 			this.productosServiceImpl.saveProductoModel(productosModel);
 			return Utilidades.generateResponse(HttpStatus.CREATED, "Product update successfully.");			
