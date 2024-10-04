@@ -1,7 +1,13 @@
 package pe.edu.unfv.security.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -10,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,50 +54,82 @@ class UserDetailServiceImplTest {
 		Optional<UserEntity> userEntity = DataProvider.userEntityModelMock();
 
 		// When -> Cuando
-		// Simular el comportamiento del repositorio		
-		Mockito.when(this.userRepository.findUserEntityByUsername(username)).thenReturn(userEntity);		
+		// Simular el comportamiento del repositorio
+		Mockito.when(this.userRepository.findUserEntityByUsername(username)).thenReturn(userEntity);
 
 		UserDetails response = this.userDetailServiceImpl.loadUserByUsername(username);
 
 		// Then -> entonces
 		// Verificar los resultados correctamentes
 		assertEquals("Eleazar Alfredo", response.getUsername());
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.userRepository).findUserEntityByUsername(username);
 	}
-	
+
 	@Test
 	void testLoadUserByUsernameOther() {
 
 		// Given -> Mientras
 		// Convertir para el comportamiento esperado
 		String username = DataProvider.usernameOther;
+		Optional<UserEntity> userEntity = DataProvider.userEntityEmptyModelMock();
+
+		// When -> Cuando
+		// Simular el comportamiento del repositorio
+		// Configura el mock para que no devuelva el usuario
+		Mockito.when(userRepository.findUserEntityByUsername(username)).thenReturn(userEntity);
+
+		// Then -> entonces
+		// Verificar los resultados correctamentes
+		// Ejecuta el método y verifica que se lance la excepción
+		assertThrows(UsernameNotFoundException.class, () -> {
+			userDetailServiceImpl.loadUserByUsername(username);
+		});
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.userRepository).findUserEntityByUsername(username);
+	}
+	
+	@Test
+	void testLoadUserByUsernameGetRoles() {
+
+		// Given -> Mientras
+		// Convertir para el comportamiento esperado
+		String username = DataProvider.username;
 		Optional<UserEntity> userEntity = DataProvider.userEntityModelMock();
 
 		// When -> Cuando
-		// Simular el comportamiento del repositorio		
+		// Simular el comportamiento del repositorio
 		Mockito.when(this.userRepository.findUserEntityByUsername(username)).thenReturn(userEntity);
-		Mockito.doThrow(new UsernameNotFoundException("El usuario " + username + " no existe")).when(this.userRepository)
-		.findUserEntityByUsername(username);
 
 		UserDetails response = this.userDetailServiceImpl.loadUserByUsername(username);
 
 		// Then -> entonces
 		// Verificar los resultados correctamentes
+		assertNotNull(response);
 		assertEquals("Eleazar Alfredo", response.getUsername());
-	}
-/*
-	@Test
-	void testAuthenticate() {
-		fail("Not yet implemented");
+		assertNotNull(response.isEnabled());
+		
+		
+		List<SimpleGrantedAuthority> expectedAuthorities = new ArrayList<>();
+        expectedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        assertEquals(expectedAuthorities.size(), response.getAuthorities().size());
+        assertTrue(response.getAuthorities().containsAll(expectedAuthorities));
+		
+
+		// Verificar las interacciones del repositorio (Mockito-specific)
+		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
+		verify(this.userRepository).findUserEntityByUsername(username);
 	}
 
-	@Test
-	void testLoginUser() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	void testCreateUser() {
-		fail("Not yet implemented");
-	}
-*/
+	/*
+	 * @Test void testAuthenticate() { fail("Not yet implemented"); }
+	 * 
+	 * @Test void testLoginUser() { fail("Not yet implemented"); }
+	 * 
+	 * @Test void testCreateUser() { fail("Not yet implemented"); }
+	 */
 }
