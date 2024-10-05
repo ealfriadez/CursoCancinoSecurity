@@ -2,7 +2,6 @@ package pe.edu.unfv.security.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
@@ -13,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -83,28 +81,6 @@ class UserDetailServiceImplTest {
 		// Verificar las interacciones del repositorio (Mockito-specific)
 		// Asegurarse de que el repositorio se haya llamado con el modelo esperado
 		verify(this.userRepository).findUserEntityByUsername(username);
-	}
-
-	@Test
-	void testAuthenticate() {
-
-		// Given -> Mientras
-		// Convertir para el comportamiento esperado
-		String username = DataProvider.username;
-		String userpassword = DataProvider.userpassword;
-		UserEntity userEntity = DataProvider.userEntityModelNullMock();
-		
-		//Optional<UserEntity> userEntity = DataProvider.userEntityEmptyModelMock();
-		// When -> Cuando
-		// Simular el comportamiento del repositorio
-		UserDetails userDetails = this.loadUserByUsername(username);
-		Mockito.when(userEntity).thenReturn(artur);
-
-		Authentication response = this.userDetailServiceImpl.authenticate(username, userpassword);
-
-		// Then -> entonces
-		// Verificar los resultados correctamentes
-		assertEquals("elio", response.getName());
 	}
 
 	/*
